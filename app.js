@@ -1,0 +1,901 @@
+const createSched = (m, tu, w, th, f) => {
+    const days = ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə'];
+    const data = [m, tu, w, th, f];
+    const schedule = {};
+    days.forEach((day, i) => {
+        schedule[day] = [1, 2, 3, 4, 5, 6, 7, 8].map(h => ({ hour: h, isBusy: data[i].includes(h) }));
+    });
+    return schedule;
+};
+
+const state = {
+    view: 'dashboard',
+    teachers: (() => {
+        // Əvvəlcə yaddaşa bax, varsa onu qaytar
+        const stored = localStorage.getItem('teachers');
+        if (stored) return JSON.parse(stored);
+
+        const rawData = [
+            { id: 101, name: 'Aynurə', surname: 'Qurban', branch: 'Az-dili/Ədəb', hourly: false, b: [[1, 2, 3, 4, 5, 6], [1, 2, 3], [], [1, 2, 4], [1, 2, 4]] },
+            { id: 102, name: 'Nənəxanım', surname: 'Qəfərova', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3], [1, 2, 3], [1, 2, 3], []] },
+            { id: 103, name: 'Könül', surname: 'Əhmədova', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6, 7, 8], [1, 3, 4], [1, 2, 3], [1, 2, 4], [1, 2]] },
+            { id: 104, name: 'Mədinə', surname: 'Məmmədova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [], [1, 2, 3], [1, 2, 3, 4], [1]] },
+            { id: 105, name: 'Gülnar', surname: 'Səttarlı', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [], [], [], [1, 2, 3, 4]] },
+            { id: 106, name: 'Xəyalə', surname: 'Əsgərli', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [], [1, 2, 3, 4], [], [1, 2, 3, 4]] },
+            { id: 107, name: 'Məhbubə', surname: 'Talıblı', branch: 'Müəllim', hourly: false, b: [[1, 4, 5, 6, 7, 8], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3], [1, 2, 3, 4]] },
+            { id: 108, name: 'Fəridə', surname: 'Alqayeva', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7, 8], [1, 2, 3], [1, 2], [1, 2], [1, 2, 3, 4]] },
+            { id: 109, name: 'Fərqanə', surname: 'Qənbərli', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6], [1, 2, 3], [], [], [1, 2, 3, 4]] },
+            { id: 110, name: 'Aytac', surname: 'Əhmədova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1, 2, 3, 4], [], [1, 3], []] },
+            { id: 111, name: 'Günel', surname: 'Axundova', branch: 'Müəllim', hourly: false, b: [[1, 3, 4, 5, 6], [1, 2, 3], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 4]] },
+            { id: 112, name: 'Saffet', surname: 'Yılmaz', branch: 'Müəllim', hourly: false, b: [[1, 2, 4, 5, 6, 7], [1], [1, 2], [1, 2, 3], [1, 2]] },
+            { id: 113, name: 'Adil', surname: 'Çaxoyev', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1, 2, 3, 4], [1, 2, 3, 4], [1], [1, 2, 3, 4]] },
+            { id: 114, name: 'Şəbnəm', surname: 'Zeynalova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [], [1, 2], [1, 2, 3, 4], [1, 2]] },
+            { id: 115, name: 'Pərvin', surname: 'Əşari', branch: 'Müəllim', hourly: false, b: [[1, 3, 4, 5, 6, 8], [1, 2, 3], [1, 2, 4], [1, 2, 3, 4], [1, 4]] },
+            { id: 116, name: 'Fatma', surname: 'Valiyev', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6], [1, 2], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2]] },
+            { id: 117, name: 'Xəyalə', surname: 'Qiyasova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1, 2, 3, 4], [], [1, 2, 3], [1, 2, 3, 4]] },
+            { id: 118, name: 'Şamil', surname: 'Süleymanov.', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]] },
+            { id: 119, name: 'Emin', surname: 'Sultanzadə', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7, 8], [1, 2], [], [], [1, 2]] },
+            { id: 120, name: 'Aytac', surname: 'Musabəyli', branch: 'İngilis dili', hourly: false, b: [[1, 3, 4, 5, 6, 7, 8], [1, 2], [1, 2, 3, 4], [1, 4], [1, 2, 3]] },
+            { id: 121, name: 'İlahə', surname: 'Əkbərova', branch: 'İngilis dili', hourly: false, b: [[1, 3, 5, 6, 7], [1, 3, 4], [1, 2], [1, 2, 4], [1]] },
+            { id: 122, name: 'Sura', surname: 'Kərimova', branch: 'İngilis dili', hourly: false, b: [[1, 2, 3, 5, 6, 7, 8], [1, 3, 4], [1, 2, 3], [1, 2], [1, 2, 3, 4]] },
+            { id: 123, name: 'Günel', surname: 'Hətəmzadə', branch: 'İngilis dili', hourly: false, b: [[1, 2, 5, 6, 7, 8], [1, 2, 3, 4], [1, 3, 4], [1, 2, 3, 4], [1, 2, 3]] },
+            { id: 124, name: 'Türkan', surname: 'Qurbanova', branch: 'İngilis dili', hourly: false, b: [[1, 3, 4, 5, 6, 7, 8], [1, 2], [1, 2, 4], [1, 2, 4], [1, 2]] },
+            { id: 125, name: 'Günel', surname: 'Hüseynova', branch: 'İngilis dili', hourly: false, b: [[1, 2, 3, 4, 5, 6], [1, 4], [1, 2, 4], [1, 2, 3], [1, 4]] },
+            { id: 126, name: 'Sevil', surname: 'Babaşova', branch: 'İngilis dili', hourly: false, b: [[1, 5, 6], [1, 3, 4], [1, 2, 3, 4], [], []] },
+            { id: 127, name: 'Gülsəba', surname: 'Aktaş', branch: 'Müəllim', hourly: false, b: [[1, 2, 4, 5, 6, 7, 8], [1], [1, 3], [1, 3, 4], [1, 4]] },
+            { id: 128, name: 'Nəzrin', surname: 'Həsənova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [], [], [], []] },
+            { id: 129, name: 'Fidan', surname: 'Abdulkərimova', branch: 'İbtidai', hourly: false, b: [[1, 5, 6, 7, 8], [1, 3, 4], [1, 4], [1, 2, 3], [1, 4]] },
+            { id: 130, name: 'Fəridə', surname: 'Sultanzadə', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6, 8], [1, 2], [1, 2, 4], [1, 4], [1, 2]] },
+            { id: 131, name: 'Mədinə', surname: 'Nağıyeva', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7, 8], [1, 4], [1], [1, 2, 4], [1, 2, 3, 4]] },
+            { id: 132, name: 'Leyla', surname: 'Şəfaqətova', branch: 'İbtidai', hourly: false, b: [[1, 2, 5, 6, 7, 8], [1], [1, 4], [1, 2, 4], [1, 2, 3, 4]] },
+            { id: 133, name: 'Nərminə', surname: 'İbrahimli', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7, 8], [1, 2, 3, 4], [1], [1, 2, 4], [1]] },
+            { id: 134, name: 'Şəlalə', surname: 'Məcidova', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7, 8], [1, 2, 3, 4], [1, 2], [1], [1]] },
+            { id: 135, name: 'Gülnar', surname: 'İbrahimova', branch: 'Müəllim', hourly: false, b: [[1, 2, 5, 6, 7], [1, 2], [1], [1, 2], [1, 2, 3]] },
+            { id: 136, name: 'Sənubər', surname: 'Baxşəliyeva', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7, 8], [1, 2], [1, 2, 3], [1, 2], [1, 2, 4]] },
+            { id: 137, name: 'Gültəkin', surname: 'Qululu', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1], [1, 2], [1], []] },
+            { id: 138, name: 'Aygün', surname: 'Mansurova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7], [], [1], [], []] },
+            { id: 140, name: 'Aysu', surname: 'Mirzayeva', branch: 'Müəllim', hourly: false, b: [[2, 4, 6], [], [6, 7, 8], [], [5, 6, 8]] },
+            { id: 141, name: 'Aynur', surname: 'Mammadova', branch: 'Az-dili/Ədəb', hourly: false, b: [[5, 6, 7], [], [7, 8], [], [6, 7, 8, 9]] },
+            { id: 142, name: 'Şahnaz', surname: 'Sarıyeva', branch: 'Müəllim', hourly: false, b: [[2, 3, 4], [2, 3, 4], [2, 4], [], [2, 3, 4]] }
+        ];
+
+        return rawData.map(t => ({
+            id: t.id,
+            name: t.name,
+            surname: t.surname,
+            branch: t.branch,
+            hourly: t.hourly || false,
+            schedule: createSched(t.b[0], t.b[1], t.b[2], t.b[3], t.b[4])
+        }));
+    })(),
+    schedulePeriods: [1, 2, 3, 4, 5, 6, 7, 8],
+    locations: JSON.parse(localStorage.getItem('locations')) || [
+        { id: 1, name: 'A-blok ətrafı' },
+        { id: 2, name: 'B-blok ətrafı' },
+        { id: 3, name: 'C-blok ətrafı' },
+        { id: 4, name: 'D-blok ətrafı' },
+        { id: 5, name: 'B-blok daxili' },
+        { id: 6, name: 'C-blok daxili' },
+        { id: 7, name: 'D-blok daxili' },
+        { id: 8, name: 'Yeməkxana - 1' },
+        { id: 9, name: 'Yeməkxana - 2' },
+        { id: 10, name: 'İdman zalı' }
+    ],
+    assignments: JSON.parse(localStorage.getItem('assignments')) || {},
+    days: ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə']
+};
+
+// Tətbiqi başlat
+document.addEventListener('DOMContentLoaded', () => {
+    setupNavigation();
+    updateDateTime();
+    startClock();
+    renderView();
+    setupTheme();
+});
+
+function saveState() {
+    localStorage.setItem('teachers', JSON.stringify(state.teachers));
+    localStorage.setItem('locations', JSON.stringify(state.locations));
+    localStorage.setItem('assignments', JSON.stringify(state.assignments));
+}
+
+// Canlı saat
+function startClock() {
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+}
+
+function updateDateTime() {
+    const now = new Date();
+
+    // Saat
+    const timeElement = document.getElementById('live-time');
+    if (timeElement) {
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    // Tarix
+    const dateElement = document.getElementById('current-date');
+    if (dateElement) {
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = now.toLocaleDateString('az-AZ', options);
+    }
+}
+
+// Naviqasiya
+function setupNavigation() {
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.view = btn.dataset.view;
+            renderView();
+        });
+    });
+}
+
+function setupTheme() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nextTheme);
+        localStorage.setItem('theme', nextTheme);
+    });
+}
+
+// Render məntiqi
+function renderView() {
+    const contentArea = document.getElementById('content-area');
+    const title = document.getElementById('view-title');
+    contentArea.innerHTML = '';
+    contentArea.classList.remove('content-fade');
+    void contentArea.offsetWidth;
+    contentArea.classList.add('content-fade');
+
+    switch (state.view) {
+        case 'dashboard':
+            title.textContent = 'İdarəetmə Paneli';
+            renderDashboard(contentArea);
+            break;
+        case 'schedule':
+            title.textContent = 'Növbə Cədvəli';
+            renderSchedule(contentArea);
+            break;
+        case 'teachers':
+            title.textContent = 'Müəllim İdarəetməsi';
+            state.teacherSearch = ''; // Axtarışı sıfırla
+            renderTeachers(contentArea);
+            break;
+        case 'locations':
+            title.textContent = 'Növbə Yerləri';
+            renderLocations(contentArea);
+            break;
+    }
+}
+
+function renderDashboard(container) {
+    const totalAssignments = Object.keys(state.assignments).length;
+    const assignedTeachers = new Set(Object.values(state.assignments)).size;
+
+    container.innerHTML = `
+        <div class="stats-grid">
+            <div class="stat-card glass">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #00525d 0%, #003f47 100%)">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="stat-info">
+                    <h4>Ümumi Müəllim</h4>
+                    <p>${state.teachers.length}</p>
+                </div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #4fd1c5 0%, #38b2ac 100%)">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <div class="stat-info">
+                    <h4>Növbə Yerləri</h4>
+                    <p>${state.locations.length}</p>
+                </div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%)">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div class="stat-info">
+                    <h4>Ümumi Təyinat</h4>
+                    <p>${totalAssignments}</p>
+                </div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%)">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div class="stat-info">
+                    <h4>Təyin Edilmiş</h4>
+                    <p>${assignedTeachers}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass" style="padding: 2rem; margin-top: 1.5rem;">
+            <h3 style="margin-bottom: 1.5rem; color: var(--primary); font-weight: 700;">
+                <svg style="width: 24px; height: 24px; display: inline-block; vertical-align: middle; margin-right: 8px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Bugünkü Növbətçilər
+            </h3>
+            ${renderTodaySchedule()}
+        </div>
+    `;
+}
+
+function renderTodaySchedule() {
+    const today = new Date().getDay();
+    const dayNames = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'];
+    const currentDay = dayNames[today];
+
+    if (today === 0 || today === 6) {
+        return `
+            <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                <svg style="width: 64px; height: 64px; margin-bottom: 1rem; opacity: 0.5;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <p style="font-size: 1.1rem;">Həftə sonu növbə yoxdur.</p>
+            </div>
+        `;
+    }
+
+    const todayAssignments = state.locations.map(loc => {
+        const teacherId = state.assignments[`${currentDay}-${loc.id}`];
+        const teacher = state.teachers.find(t => t.id == teacherId);
+        return { loc: loc.name, teacher: teacher ? `${teacher.name} ${teacher.surname}` : null, branch: teacher?.branch };
+    });
+
+    return `
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Növbə Yeri</th>
+                        <th>Müəllim</th>
+                        <th>İxtisas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${todayAssignments.map(a => `
+                        <tr>
+                            <td><strong>${a.loc}</strong></td>
+                            <td>
+                                ${a.teacher
+            ? `<span class="badge btn-primary">${a.teacher}</span>`
+            : `<span style="color: var(--text-muted); font-style: italic;">Təyin edilməyib</span>`
+        }
+                            </td>
+                            <td style="color: var(--text-muted);">${a.branch || '-'}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function renderSchedule(container) {
+    container.innerHTML = `
+        <div class="glass" style="padding: 1.5rem; overflow-x: auto;">
+            <div class="duty-grid" id="main-duty-grid">
+                <div class="grid-header" style="background: transparent; color: var(--text-main); font-weight: 700;">Növbə Yerləri</div>
+                ${state.days.map(day => `<div class="grid-header">${day}</div>`).join('')}
+                
+                ${state.locations.map(loc => `
+                    <div class="grid-cell location-name">${loc.name}</div>
+                    ${state.days.map(day => {
+        const teacherId = state.assignments[`${day}-${loc.id}`];
+        const teacher = state.teachers.find(t => t.id == teacherId);
+        return `
+                            <div class="grid-cell">
+                                ${teacher ? `
+                                    <div class="assignment-badge" onclick="openAssignModal('${day}', ${loc.id})">
+                                        ${teacher.name} ${teacher.surname}
+                                    </div>
+                                ` : `
+                                    <div class="empty-slot" onclick="openAssignModal('${day}', ${loc.id})">+ Əlavə et</div>
+                                `}
+                            </div>
+                        `;
+    }).join('')}
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function renderTeachers(container) {
+    container.innerHTML = `
+        <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; gap: 1rem; align-items: center; flex: 1; min-width: 300px;">
+                <p style="color: var(--text-muted); white-space: nowrap;">Ümumi: <strong>${state.teachers.length}</strong> müəllim</p>
+                <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                    <input type="text" id="teacher-search" class="form-control" placeholder="Müəllim axtar..." oninput="filterTeachers(this.value)" value="${state.teacherSearch || ''}">
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-secondary" onclick="openImportModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    PDF-dən Yüklə
+                </button>
+                <button class="btn btn-danger" onclick="deleteAllTeachers()" style="background: #e53e3e;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    Hamsını Sil
+                </button>
+                <button class="btn btn-primary" onclick="openTeacherModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                    Yeni Müəllim
+                </button>
+            </div>
+        </div>
+        <div class="glass">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ad Soyad</th>
+                            <th>İxtisas</th>
+                            <th>Əməliyyatlar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacher-table-body">
+                        ${renderTeacherRows(state.teachers)}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function renderTeacherRows(teachers) {
+    return teachers.map(t => `
+        <tr style="cursor: pointer;" onclick="showTeacherSchedule(${t.id})">
+            <td>
+                <strong>${t.name} ${t.surname}</strong>
+                ${t.hourly ? '<span style="background: #f59e0b; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px;">Saat hesablı</span>' : ''}
+            </td>
+            <td style="color: var(--text-muted);">${t.branch}</td>
+
+            <td>
+                <button class="btn btn-secondary" onclick="event.stopPropagation(); editTeacher(${t.id})" style="padding: 6px 12px; font-size: 0.85rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Düzəliş
+                </button>
+                <button class="btn btn-danger" onclick="event.stopPropagation(); deleteTeacher(${t.id})" style="padding: 6px 12px; font-size: 0.85rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    Sil
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.filterTeachers = (query) => {
+    state.teacherSearch = query.toLowerCase();
+    const filtered = state.teachers.filter(t =>
+        t.name.toLowerCase().includes(state.teacherSearch) ||
+        t.surname.toLowerCase().includes(state.teacherSearch) ||
+        t.branch.toLowerCase().includes(state.teacherSearch)
+    );
+    document.getElementById('teacher-table-body').innerHTML = renderTeacherRows(filtered);
+};
+
+function renderLocations(container) {
+    container.innerHTML = `
+        <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <p style="color: var(--text-muted);">Ümumi: <strong>${state.locations.length}</strong> növbə yeri</p>
+            <button class="btn btn-primary" onclick="openLocationModal()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                Yeni Yer Əlavə Et
+            </button>
+        </div>
+        <div class="glass">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Növbə Yeri Adı</th>
+                            <th>Əməliyyatlar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${state.locations.map(l => `
+                            <tr>
+                                <td><strong>${l.name}</strong></td>
+                                <td>
+                                    <button class="btn btn-secondary" onclick="editLocation(${l.id})" style="padding: 6px 12px; font-size: 0.85rem;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                        Düzəliş
+                                    </button>
+                                    <button class="btn btn-danger" onclick="deleteLocation(${l.id})" style="padding: 6px 12px; font-size: 0.85rem;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                        Sil
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+// Modal CRUD məntiqi
+window.openAssignModal = (day, locationId) => {
+    const loc = state.locations.find(l => l.id == locationId);
+    showModal(`Növbə Təyinatı: ${day} - ${loc.name}`, `
+        <div class="form-group">
+            <label>Müəllim Seçin</label>
+            <select id="assign-teacher-select" class="form-control" onchange="window.handleTeacherSelectChange(this, '${day}')">
+                <option value="">-- Boşalt --</option>
+                ${state.teachers.map(t => {
+        const isBusyToday = t.schedule && t.schedule[day] ? t.schedule[day].some(p => p.isBusy) : false;
+        const busyHours = isBusyToday ? t.schedule[day].filter(p => p.isBusy).map(p => p.hour).join(', ') : '';
+        return `
+                    <option value="${t.id}" ${state.assignments[`${day}-${locationId}`] == t.id ? 'selected' : ''}>
+                        ${t.name} ${t.surname} ${isBusyToday ? `(Dərsi var: ${busyHours}. saatlar)` : '(Boşdur)'}
+                    </option>
+                `}).join('')}
+            </select>
+        </div>
+        <div id="teacher-schedule-preview" style="margin-top: 1rem; font-size: 0.85rem; padding: 1rem; background: var(--bg-light); border-radius: 8px;">
+            <p style="color: var(--text-muted);">Müəllim seçdikdə onun <strong>${day}</strong> günü üçün dərs cədvəli burada görünəcək.</p>
+        </div>
+        <button class="btn btn-primary" onclick="saveAssignment('${day}', ${locationId})" style="width: 100%; margin-top: 1rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Yadda Saxla
+        </button>
+    `);
+};
+
+window.saveAssignment = (day, locId) => {
+    const teacherId = document.getElementById('assign-teacher-select').value;
+    if (teacherId) {
+        state.assignments[`${day}-${locId}`] = teacherId;
+    } else {
+        delete state.assignments[`${day}-${locId}`];
+    }
+    saveState();
+    closeModal();
+    renderView();
+};
+
+window.openTeacherModal = (teacherId = null) => {
+    const teacher = teacherId ? state.teachers.find(t => t.id == teacherId) : { name: '', surname: '', branch: '' };
+    showModal(teacherId ? 'Müəllim Məlumatlarını Yenilə' : 'Yeni Müəllim Əlavə Et', `
+        <div class="form-group">
+            <label>Ad</label>
+            <input type="text" id="t-name" class="form-control" value="${teacher.name}" placeholder="Müəllimin adı">
+        </div>
+        <div class="form-group">
+            <label>Soyad</label>
+            <input type="text" id="t-surname" class="form-control" value="${teacher.surname}" placeholder="Müəllimin soyadı">
+        </div>
+        <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+            <input type="checkbox" id="t-hourly" ${teacher.hourly ? 'checked' : ''} style="width: auto;">
+            <label for="t-hourly" style="margin: 0; cursor: pointer;">Saat hesabı</label>
+        </div>
+        <div class="form-group">
+            <label>Toplam Dərs Saatı (Həftəlik)</label>
+            <input type="number" id="t-totalHours" class="form-control" value="${teacher.totalHours || 0}" min="0">
+        </div>
+        <button class="btn btn-primary" onclick="saveTeacher(${teacherId})" style="width: 100%; margin-top: 1rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Yadda Saxla
+        </button>
+    `);
+};
+
+window.editTeacher = (id) => {
+    openTeacherModal(id);
+};
+
+window.saveTeacher = (id) => {
+    const name = document.getElementById('t-name').value.trim();
+    const surname = document.getElementById('t-surname').value.trim();
+    const hourly = document.getElementById('t-hourly').checked;
+    const totalHours = parseInt(document.getElementById('t-totalHours').value) || 0;
+
+    if (!name || !surname) {
+        alert('Zəhmət olmasa ad və soyad daxil edin!');
+        return;
+    }
+
+    if (id) {
+        const index = state.teachers.findIndex(t => t.id == id);
+        // İxtisas (branch) artıq lazım deyil, onu sabit 'Müəllim' saxlayıram və ya silirəm
+        state.teachers[index] = { ...state.teachers[index], name, surname, hourly, totalHours };
+    } else {
+        const newTeacher = {
+            id: Date.now(),
+            name,
+            surname,
+            branch: 'Müəllim', // Default value
+            hourly,
+            totalHours,
+            schedule: {}
+        };
+        // Boş cədvəl yarat
+        state.days.forEach(day => {
+            newTeacher.schedule[day] = state.schedulePeriods.map(h => ({ hour: h, isBusy: false }));
+        });
+        state.teachers.push(newTeacher);
+    }
+
+    saveState();
+    closeModal();
+    renderView();
+};
+
+window.deleteTeacher = (id) => {
+    if (confirm('Bu müəllimi silmək istədiyinizə əminsiniz? Bütün təyinatlar da silinəcək.')) {
+        state.teachers = state.teachers.filter(t => t.id != id);
+        Object.keys(state.assignments).forEach(key => {
+            if (state.assignments[key] == id) delete state.assignments[key];
+        });
+        saveState();
+        renderView();
+    }
+};
+
+window.deleteAllTeachers = () => {
+    if (confirm('BÜTÜN müəllimləri silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz!')) {
+        if (confirm('Həqiqətən əminsiniz? Bütün məlumatlar silinəcək.')) {
+            state.teachers = [];
+            state.assignments = {};
+            saveState();
+            renderView();
+            alert('Bütün müəllimlər silindi.');
+        }
+    }
+};
+
+window.openLocationModal = (locId = null) => {
+    const loc = locId ? state.locations.find(l => l.id == locId) : { name: '' };
+    showModal(locId ? 'Yeri Yenilə' : 'Yeni Növbə Yeri Əlavə Et', `
+        <div class="form-group">
+            <label>Növbə Yeri Adı</label>
+            <input type="text" id="l-name" class="form-control" value="${loc.name}" placeholder="Məs: A-blok daxili">
+        </div>
+        <button class="btn btn-primary" onclick="saveLocation(${locId})" style="width: 100%; margin-top: 1rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Yadda Saxla
+        </button>
+    `);
+};
+
+window.editLocation = (id) => {
+    openLocationModal(id);
+};
+
+window.saveLocation = (id) => {
+    const name = document.getElementById('l-name').value.trim();
+
+    if (!name) {
+        alert('Zəhmət olmasa növbə yeri adını daxil edin!');
+        return;
+    }
+
+    if (id) {
+        const index = state.locations.findIndex(l => l.id == id);
+        state.locations[index] = { id, name };
+    } else {
+        state.locations.push({ id: Date.now(), name });
+    }
+    saveState();
+    closeModal();
+    renderView();
+};
+
+window.deleteLocation = (id) => {
+    if (confirm('Bu növbə yerini silmək istədiyinizə əminsiniz?')) {
+        state.locations = state.locations.filter(l => l.id != id);
+        Object.keys(state.assignments).forEach(key => {
+            if (key.endsWith(`-${id}`)) delete state.assignments[key];
+        });
+        saveState();
+        renderView();
+    }
+};
+
+// Modal alətləri
+function showModal(title, bodyHtml) {
+    document.getElementById('modal-title').innerHTML = title;
+    document.getElementById('modal-body').innerHTML = bodyHtml;
+    document.getElementById('modal-container').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('modal-container').classList.add('hidden');
+}
+
+// PDF İdxal Məntiqi
+window.openImportModal = () => {
+    showModal('PDF-dən Müəllim Siyahısını Yüklə', `
+        <div class="import-area" style="text-align: center; padding: 2rem; border: 2px dashed var(--border-light); border-radius: 12px; margin-bottom: 1rem;">
+            <input type="file" id="pdf-upload" accept=".pdf" style="display: none;" onchange="handlePDFUpload(event)">
+            <label for="pdf-upload" style="cursor: pointer; display: flex; flex-direction: column; align-items: center;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5" style="margin-bottom: 1rem;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+                <span style="font-weight: 600; color: var(--text-main);">PDF Faylını Seçin</span>
+                <span style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Siyahı olan PDF faylını bura yükləyin</span>
+            </label>
+        </div>
+        <div id="import-status" style="margin-top: 1rem; font-size: 0.9rem;"></div>
+        <div id="import-preview" style="max-height: 200px; overflow-y: auto; margin-top: 1rem; border-top: 1px solid var(--border-light); padding-top: 1rem; display: none;">
+            <table style="width: 100%; font-size: 0.8rem;">
+                <thead><tr><th align="left">Müəllim</th></tr></thead>
+                <tbody id="preview-body"></tbody>
+            </table>
+        </div>
+        <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem;">
+            <button id="confirm-import" class="btn btn-primary" style="flex: 1; display: none;" onclick="confirmImport()">Siyahını Təsdiqlə</button>
+        </div>
+    `);
+};
+
+let tempTeachers = [];
+
+window.handlePDFUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const status = document.getElementById('import-status');
+    status.innerHTML = '<span style="color: var(--primary);">Fayl analiz edilir... Gözləyin...</span>';
+
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        tempTeachers = [];
+
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+
+            // Map text items to {str, x, y}
+            const items = content.items.map(item => ({
+                str: item.str.trim().replace(/\s+/g, ' '),
+                x: item.transform[4],
+                y: item.transform[5]
+            })).filter(item => item.str.length > 0);
+
+            if (items.length === 0) continue;
+
+            const sortedByYDesc = [...items].sort((a, b) => b.y - a.y);
+            let teacherName = "Naməlum";
+
+            for (let item of sortedByYDesc) {
+                // Ignore known header keywords
+                if (item.str.length > 2 && !/IMSA|Maarif|Kampüsü|Ders Plan|Online|Günü|Oluşturuldu/i.test(item.str)) {
+                    // Found a candidate for name part. Now find ALL parts on this same line (Y-axis)
+                    const baseY = item.y;
+                    const nameParts = items.filter(i => Math.abs(i.y - baseY) < 10 && !/IMSA|Maarif|Kampüsü|Ders Plan|Online|Günü|Oluşturuldu/i.test(i.str));
+
+                    // Sort parts from left to right
+                    nameParts.sort((a, b) => a.x - b.x);
+
+                    // Join them to form full Name Surname
+                    teacherName = nameParts.map(i => i.str).join(' ').trim();
+                    break;
+                }
+            }
+
+            const dayMarkers = [];
+            const hourMarkers = [];
+
+            items.forEach(item => {
+                const dayMatch = item.str.match(/^([1-5])\s*G/i);
+                if (dayMatch) dayMarkers.push({ day: parseInt(dayMatch[1]), y: item.y });
+
+                const hourMatch = item.str.match(/^([1-8])$/);
+                if (hourMatch) {
+                    hourMarkers.push({ hour: parseInt(hourMatch[1]), x: item.x, y: item.y });
+                }
+            });
+
+            // Sort hour markers by Y, take the topmost row (headers)
+            if (hourMarkers.length > 0) {
+                hourMarkers.sort((a, b) => b.y - a.y);
+                const headerY = hourMarkers[0].y;
+                // Keep unique hours close to headerY
+                const finalHours = [];
+                hourMarkers.forEach(h => {
+                    if (Math.abs(h.y - headerY) < 15) {
+                        if (!finalHours.find(u => u.hour === h.hour)) finalHours.push(h);
+                    }
+                });
+                hourMarkers.length = 0;
+                hourMarkers.push(...finalHours);
+            }
+
+            dayMarkers.sort((a, b) => b.y - a.y);
+            hourMarkers.sort((a, b) => a.x - b.x);
+
+            if (dayMarkers.length === 0 || hourMarkers.length === 0) continue;
+
+            // Calculate Approximate Column Width for Merged Cell Detection
+            let avgColWidth = 60; // default backup
+            if (hourMarkers.length > 1) {
+                const totalDist = hourMarkers[hourMarkers.length - 1].x - hourMarkers[0].x;
+                avgColWidth = totalDist / (hourMarkers.length - 1);
+            }
+
+            const nameParts = teacherName.split(' ');
+            const teacher = {
+                id: Date.now() + Math.random(),
+                name: nameParts[0],
+                surname: nameParts.slice(1).join(' '),
+                branch: "Müəllim",
+                schedule: {}
+            };
+            state.days.forEach(d => teacher.schedule[d] = [1, 2, 3, 4, 5, 6, 7, 8].map(h => ({ hour: h, isBusy: false })));
+
+            items.forEach(item => {
+                if (/Günü|IMSA|Maarif|Kampüsü|Ders Plan|Nahar Vaxt|nahar|Oluşturuldu|aSc|Online/i.test(item.str)) return;
+                if (/^[1-8]$/.test(item.str)) return;
+                if (item.str === teacherName) return;
+
+                const dayObj = dayMarkers.find(dm => Math.abs(dm.y - item.y) < 25);
+                if (!dayObj) return;
+
+                const dayName = state.days[dayObj.day - 1];
+
+                // Allow matching multiple hours (merged cells)
+                // If a lesson spans 2 columns (merged), its center X will be exactly between the two column centers.
+                // Distance to each column center will be 0.5 * Width.
+                // We use 0.55 * Width to safely capture these, but avoid capturing neighbors (Distance = 1.0 * Width).
+                const threshold = avgColWidth * 0.55;
+
+                hourMarkers.forEach(hm => {
+                    const dist = Math.abs(hm.x - item.x);
+                    if (dist < threshold) {
+                        const slot = teacher.schedule[dayName].find(s => s.hour === hm.hour);
+                        if (slot) {
+                            slot.isBusy = true;
+                        }
+                    }
+                });
+            });
+
+            // Calculate total hours
+            const totalHours = Object.values(teacher.schedule).reduce((acc, day) => acc + day.filter(h => h.isBusy).length, 0);
+            teacher.totalHours = totalHours;
+            teacher.hourly = false;
+
+            tempTeachers.push(teacher);
+        }
+
+        if (tempTeachers.length > 0) {
+            status.innerHTML = `<span style="color: #10b981; font-weight: 600;">${tempTeachers.length} müəllim cədvəli 100% dəqiqliklə oxundu!</span>`;
+            const preview = document.getElementById('import-preview');
+            const previewBody = document.getElementById('preview-body');
+            const confirmBtn = document.getElementById('confirm-import');
+            preview.style.display = 'block';
+            confirmBtn.style.display = 'block';
+            previewBody.innerHTML = tempTeachers.map(t => {
+                return `<tr><td><strong>${t.name} ${t.surname}</strong></td><td>${t.totalHours} saat dərs</td></tr>`;
+            }).join('');
+        } else {
+            status.innerHTML = '<span style="color: var(--danger);">Cədvəl tanınmadı. PDF-in düzgün formatda olduğuna əmin olun.</span>';
+        }
+    } catch (error) {
+        console.error(error);
+        status.innerHTML = '<span style="color: var(--danger);">Xəta baş verdi: PDF faylı oxuna bilmədi.</span>';
+    }
+};
+
+window.confirmImport = () => {
+    if (confirm(`Siyahını sistemə əlavə etmək istəyirsiniz? (${tempTeachers.length} nəfər)`)) {
+        // Mövcud müəllimləri silmək və ya üzərinə əlavə etmək seçimi:
+        // İstifadəçi istəyindən asılı olaraq dəyişdirilə bilər. Hal-hazırda ÜZƏRİNƏ ƏLAVƏ edir.
+        state.teachers = [...state.teachers, ...tempTeachers];
+        saveState();
+        closeModal();
+        renderView();
+        alert('Yeni müəllimlər uğurla əlavə edildi!');
+    }
+};
+
+window.handleTeacherSelectChange = (select, day) => {
+    const teacherId = select.value;
+    const preview = document.getElementById('teacher-schedule-preview');
+    if (!teacherId) {
+        preview.innerHTML = '<p>Müəllim seçilməyib.</p>';
+        return;
+    }
+    const teacher = state.teachers.find(t => t.id == teacherId);
+    if (teacher && teacher.schedule && teacher.schedule[day]) {
+        let html = `<strong>${day} dərs cədvəli:</strong><div style="display: flex; gap: 4px; margin-top: 8px;">`;
+        teacher.schedule[day].forEach(p => {
+            html += `<div style="flex: 1; text-align: center; padding: 4px; border-radius: 4px; background: ${p.isBusy ? '#fed7d7' : '#c6f6d5'}; color: ${p.isBusy ? '#c53030' : '#22543d'};">${p.hour}</div>`;
+        });
+        html += '</div>';
+        preview.innerHTML = html;
+    } else {
+        preview.innerHTML = '<p>Bu müəllim üçün cədvəl məlumatı yoxdur.</p>';
+    }
+};
+
+
+window.showTeacherSchedule = (teacherId) => {
+    const teacher = state.teachers.find(t => t.id == teacherId);
+    if (!teacher || !teacher.schedule) {
+        alert('Bu müəllim üçün cədvəl tapılmadı.');
+        return;
+    }
+
+    const lessonTimes = [
+        "08:40 - 09:20", "09:30 - 10:10", "10:20 - 11:00", "11:10 - 11:50",
+        "12:40 - 13:20", "13:30 - 14:10", "14:20 - 15:00", "15:10 - 15:50"
+    ];
+
+    const periods = [1, 2, 3, 4, 5, 6, 7, 8];
+
+    let scheduleHtml = `
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                <thead>
+                    <tr style="background-color: #00525d; color: #ffffff !important;">
+                        <th style="padding: 4px; border: 1px solid rgba(255,255,255,0.3); vertical-align: middle; width: 60px;">Gün</th>
+                        ${periods.map((h) => `
+                            <th style="padding: 4px; border: 1px solid rgba(255,255,255,0.3); text-align: center; color: #ffffff !important;">
+                                <div style="font-size: 1.1em; font-weight: bold; line-height: 1.2;">${h}</div>
+                            </th>
+                        `).join('')}
+                        <th style="padding: 4px; border: 1px solid rgba(255,255,255,0.3); vertical-align: middle; width: 50px;">Cəmi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${state.days.map(day => {
+        const dailyBusyCount = teacher.schedule[day] ? teacher.schedule[day].filter(s => s.isBusy).length : 0;
+        return `
+                        <tr>
+                            <td style="padding: 4px; border: 1px solid var(--border-light); font-weight: 600; background: var(--bg-light); white-space: nowrap;">${day}</td>
+                            ${periods.map(h => {
+            const p = teacher.schedule[day] ? teacher.schedule[day].find(slot => slot.hour === h) || { isBusy: false } : { isBusy: false };
+            return `
+                                    <td style="padding: 4px; border: 1px solid var(--border-light); text-align: center; background: ${p.isBusy ? '#fed7d7' : '#c6f6d5'}; color: ${p.isBusy ? '#c53030' : '#22543d'}; font-weight: 600;">
+                                        ${p.isBusy ? '●' : '○'}
+                                    </td>
+                                `;
+        }).join('')}
+                            <td style="padding: 4px; border: 1px solid var(--border-light); text-align: center; font-weight: 700;">${dailyBusyCount}</td>
+                        </tr>
+                    `}).join('')}
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: center; font-size: 0.8rem;">
+            <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 14px; height: 14px; background: #fed7d7; border-radius: 4px;"></span> Dərsi var</span>
+            <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 14px; height: 14px; background: #c6f6d5; border-radius: 4px;"></span> Boşdur</span>
+        </div>
+    `;
+
+    const totalHours = teacher.totalHours ? teacher.totalHours : (teacher.schedule ? Object.values(teacher.schedule).reduce((acc, d) => acc + d.filter(s => s.isBusy).length, 0) : 0);
+    const hourlyBadge = teacher.hourly ? '<span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">Saat Hesablı</span>' : '';
+
+    showModal(
+        `<div style="display:flex; align-items:center;">
+            ${teacher.name} ${teacher.surname} 
+            ${hourlyBadge}
+            <span style="margin-left: auto; font-size: 0.9em; font-weight: normal; color: var(--text-muted);">Həftəlik Cəmi: <strong>${totalHours}</strong> saat</span>
+         </div>`,
+        scheduleHtml
+    );
+};
+
+document.querySelector('.close-modal').onclick = closeModal;
+window.onclick = (event) => {
+    if (event.target == document.getElementById('modal-container')) closeModal();
+};
