@@ -12,823 +12,828 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <style>
-/* TMV Kurumsal Üslub - Nöbet Sistemi */
-:root {
-    --primary: #00525d;
-    --primary-light: #007f8c;
-    --primary-dark: #003f47;
-    --primary-hover: #003f47;
-    --secondary: #4fd1c5;
-    --accent: #f59e0b;
-    --bg-main: #00525d;
-    --bg-card: rgba(255, 255, 255, 0.95);
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --text-light: #fcfcfc;
-    --sidebar-bg: #003f47;
-    --sidebar-text: #fcfcfc;
-    --border: #e2e8f0;
-    --glass-bg: rgba(255, 255, 255, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    --shadow-3xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-    --danger: #ef4444;
-    --radius: 16px;
-    --radius-lg: 24px;
-}
-
-[data-theme="dark"] {
-    --bg-main: #0f172a;
-    --bg-card: rgba(30, 41, 59, 0.95);
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border: #334155;
-    --glass-bg: rgba(15, 23, 42, 0.9);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --sidebar-bg: #1a202c;
-    --primary: #4fd1c5;
-    --primary-dark: #38b2ac;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', 'Outfit', sans-serif;
-}
-
-html,
-body {
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden;
-}
-
-body {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: var(--text-main);
-    overflow: hidden;
-    height: 100vh;
-    padding-top: 0 !important;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-[data-theme="dark"] body {
-    background: linear-gradient(135deg, var(--bg-main) 0%, #1a202c 100%);
-}
-
-.app-container {
-    display: flex;
-    height: 100vh;
-    width: 100vw;
-}
-
-/* ===== SIDEBAR ===== */
-.sidebar {
-    width: 280px;
-    background: linear-gradient(180deg, var(--sidebar-bg) 0%, #002a31 100%);
-    color: var(--sidebar-text);
-    display: flex;
-    flex-direction: column;
-    padding: 1.5rem;
-    position: relative;
-    z-index: 10;
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] .sidebar {
-    background: linear-gradient(180deg, var(--sidebar-bg) 0%, #0f172a 100%);
-}
-
-.logo-section {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 2rem;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.logo-img {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    object-fit: contain;
-    background: #ffffff;
-    padding: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    border: 2px solid var(--secondary);
-    transition: transform 0.3s ease;
-}
-
-.logo-img:hover {
-    transform: scale(1.05);
-}
-
-.logo-icon {
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, #ffffff 0%, #e0f2f1 100%);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border: 2px solid var(--secondary);
-}
-
-.logo-icon svg {
-    width: 32px;
-    height: 32px;
-}
-
-.logo-section h1 {
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    line-height: 1.3;
-    color: #ffffff;
-}
-
-.nav-menu {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 1rem 1.25rem;
-    border-radius: var(--radius);
-    border: none;
-    background: transparent;
-    color: rgba(255, 255, 255, 0.7);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    text-align: left;
-    width: 100%;
-    font-weight: 500;
-}
-
-.nav-item svg {
-    width: 22px;
-    height: 22px;
-}
-
-.nav-item span {
-    font-weight: 500;
-    font-size: 0.95rem;
-}
-
-.nav-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    transform: translateX(4px);
-}
-
-.nav-item.active {
-    background: linear-gradient(135deg, var(--secondary) 0%, #38b2ac 100%);
-    color: var(--primary-dark);
-    box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
-    font-weight: 600;
-}
-
-[data-theme="dark"] .nav-item.active {
-    background: var(--secondary);
-    color: #00525d;
-}
-
-.sidebar-footer {
-    margin-top: auto;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    justify-content: center;
-}
-
-.theme-btn {
-    width: 52px;
-    height: 52px;
-    background: rgba(255, 255, 255, 0.15);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.theme-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: scale(1.08);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.theme-btn svg {
-    width: 24px;
-    height: 24px;
-}
-
-[data-theme="dark"] .theme-btn {
-    background: #4fd1c5;
-    border-color: #4fd1c5;
-    color: #00525d;
-}
-
-/* ===== MAIN CONTENT AREA ===== */
-.main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background: transparent;
-}
-
-.top-bar {
-    padding: 1.5rem 2.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--glass-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--glass-border);
-    z-index: 5;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-}
-
-.top-bar h2 {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--primary);
-    letter-spacing: -0.5px;
-}
-
-[data-theme="dark"] .top-bar h2 {
-    color: var(--secondary);
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.live-clock {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    padding: 0.65rem 1.25rem;
-    border-radius: 50px;
-    font-variant-numeric: tabular-nums;
-    box-shadow: 0 4px 12px rgba(0, 82, 93, 0.3);
-}
-
-[data-theme="dark"] .live-clock {
-    background: linear-gradient(135deg, var(--secondary) 0%, #38b2ac 100%);
-}
-
-.live-time {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-[data-theme="dark"] .live-time {
-    color: #00525d;
-}
-
-.live-separator {
-    color: rgba(255, 255, 255, 0.5);
-    font-weight: 300;
-}
-
-[data-theme="dark"] .live-separator {
-    color: rgba(0, 82, 93, 0.5);
-}
-
-.live-date {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.9);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-[data-theme="dark"] .live-date {
-    color: #003f47;
-}
-
-#content-area {
-    padding: 2rem;
-    overflow-y: auto;
-    flex: 1;
-    background: radial-gradient(ellipse at top right, rgba(79, 209, 197, 0.15), transparent 50%),
-        radial-gradient(ellipse at bottom left, rgba(0, 82, 93, 0.1), transparent 50%);
-}
-
-/* ===== GLASS CARDS ===== */
-.glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-3xl);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.glass:hover {
-    box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.25), 0 15px 15px -5px rgba(0, 0, 0, 0.15);
-}
-
-/* ===== STATS GRID ===== */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.stat-card {
-    padding: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1.75rem;
-    background: var(--glass-bg);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-lg);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-3xl);
-}
-
-.stat-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    box-shadow: 0 8px 20px rgba(0, 82, 93, 0.35);
-}
-
-.stat-icon svg {
-    width: 28px;
-    height: 28px;
-}
-
-.stat-info h4 {
-    color: var(--text-muted);
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
-    margin-bottom: 0.35rem;
-}
-
-.stat-info p {
-    font-size: 2.25rem;
-    font-weight: 800;
-    color: var(--primary);
-    letter-spacing: -1px;
-}
-
-[data-theme="dark"] .stat-info p {
-    color: var(--secondary);
-}
-
-/* ===== TABLE STYLING ===== */
-.table-container {
-    width: 100%;
-    overflow-x: auto;
-    border-radius: var(--radius);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-}
-
-th {
-    padding: 1.25rem 1rem;
-    color: var(--primary);
-    font-weight: 700;
-    border-bottom: 2px solid var(--primary);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-[data-theme="dark"] th {
-    color: var(--secondary);
-    border-color: var(--secondary);
-}
-
-td {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-main);
-}
-
-tr:last-child td {
-    border-bottom: none;
-}
-
-tr:hover td {
-    background: rgba(0, 82, 93, 0.04);
-}
-
-[data-theme="dark"] tr:hover td {
-    background: rgba(79, 209, 197, 0.08);
-}
-
-/* ===== BUTTONS ===== */
-.btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.95rem;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: white;
-    box-shadow: 0 4px 15px rgba(0, 82, 93, 0.35);
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 82, 93, 0.45);
-}
-
-[data-theme="dark"] .btn-primary {
-    background: linear-gradient(135deg, var(--secondary) 0%, #38b2ac 100%);
-    color: #00525d;
-}
-
-.btn-secondary {
-    background: linear-gradient(135deg, var(--secondary) 0%, #38b2ac 100%);
-    color: #00525d;
-    box-shadow: 0 4px 15px rgba(79, 209, 197, 0.35);
-}
-
-.btn-secondary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(79, 209, 197, 0.45);
-}
-
-.btn-danger {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    color: white;
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
-}
-
-.btn-danger:hover {
-    filter: brightness(1.1);
-    transform: translateY(-2px);
-}
-
-.badge {
-    padding: 6px 14px;
-    border-radius: 25px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: inline-block;
-}
-
-/* ===== FORMS ===== */
-.form-group {
-    margin-bottom: 1.25rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--text-main);
-    font-size: 0.95rem;
-}
-
-.form-control {
-    width: 100%;
-    padding: 0.875rem 1rem;
-    border-radius: 12px;
-    border: 2px solid var(--border);
-    background: var(--bg-card);
-    color: var(--text-main);
-    font-size: 1rem;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(0, 82, 93, 0.15);
-}
-
-[data-theme="dark"] .form-control:focus {
-    border-color: var(--secondary);
-    box-shadow: 0 0 0 4px rgba(79, 209, 197, 0.2);
-}
-
-/* ===== MODALS ===== */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
-}
-
-.modal-overlay:not(.hidden) {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.modal-content {
-    width: 100%;
-    max-width: 520px;
-    padding: 2.5rem;
-    transform: translateY(20px) scale(0.95);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: var(--glass-bg);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--glass-border);
-}
-
-.modal-overlay:not(.hidden) .modal-content {
-    transform: translateY(0) scale(1);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
-}
-
-.modal-header h3 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: var(--primary);
-}
-
-[data-theme="dark"] .modal-header h3 {
-    color: var(--secondary);
-}
-
-.close-modal {
-    background: transparent;
-    border: none;
-    font-size: 2rem;
-    cursor: pointer;
-    color: var(--text-muted);
-    line-height: 1;
-    transition: color 0.2s, transform 0.2s;
-}
-
-.close-modal:hover {
-    color: var(--danger);
-    transform: rotate(90deg);
-}
-
-/* ===== ANIMATIONS ===== */
-.content-fade {
-    animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.7;
-    }
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* ===== DUTY GRID ===== */
-.duty-grid {
-    display: grid;
-    grid-template-columns: 160px repeat(5, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 2px solid var(--primary);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-}
-
-[data-theme="dark"] .duty-grid {
-    border-color: var(--secondary);
-}
-
-.grid-header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: white;
-    padding: 1.25rem;
-    font-weight: 700;
-    text-align: center;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-[data-theme="dark"] .grid-header {
-    background: linear-gradient(135deg, var(--secondary) 0%, #38b2ac 100%);
-    color: #00525d;
-}
-
-.grid-cell {
-    background: var(--bg-card);
-    padding: 1rem;
-    min-height: 90px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    transition: background 0.2s;
-}
-
-.location-name {
-    font-weight: 700;
-    color: var(--primary);
-    font-size: 0.9rem;
-}
-
-[data-theme="dark"] .location-name {
-    color: var(--secondary);
-}
-
-.assignment-badge {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 10px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 500;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 3px 8px rgba(0, 82, 93, 0.25);
-}
-
-[data-theme="dark"] .assignment-badge {
-    background: linear-gradient(135deg, var(--secondary) 0%, #38b2ac 100%);
-    color: #00525d;
-}
-
-.assignment-badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 12px rgba(0, 82, 93, 0.35);
-}
-
-.empty-slot {
-    border: 2px dashed var(--border);
-    flex: 1;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-
-.empty-slot:hover {
-    background: rgba(0, 82, 93, 0.08);
-    border-color: var(--primary);
-    color: var(--primary);
-    transform: scale(1.02);
-}
-
-[data-theme="dark"] .empty-slot:hover {
-    background: rgba(79, 209, 197, 0.1);
-    border-color: var(--secondary);
-    color: var(--secondary);
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1024px) {
-    .sidebar {
-        width: 240px;
-        padding: 1rem;
-    }
-
-    .logo-section {
-        padding: 0.75rem;
-    }
-
-    .logo-icon {
-        width: 44px;
-        height: 44px;
-    }
-
-    .logo-section h1 {
-        font-size: 1rem;
-    }
-
-    #content-area {
-        padding: 1.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .app-container {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-        padding: 1rem;
-    }
-
-    .nav-menu {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        justify-content: center;
-    }
-
-    .nav-item {
-        padding: 0.75rem 1rem;
-    }
-
-    .nav-item span {
-        display: none;
-    }
-
-    .top-bar {
-        padding: 1rem 1.5rem;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .duty-grid {
-        grid-template-columns: 100px repeat(5, 1fr);
-        font-size: 0.75rem;
-    }
-}
-</style>
-    <!-- PDF parsing library -->
+        /* TMV Kurumsal Üslub - Nöbet Sistemi */
+        :root {
+            --primary: #00525d;
+            --primary-light: #007f8c;
+            --primary-dark: #003f47;
+            --primary-hover: #003f47;
+            --secondary: #4fd1c5;
+            --accent: #f59e0b;
+            --bg-main: #00525d;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-light: #fcfcfc;
+            --sidebar-bg: #003f47;
+            --sidebar-text: #fcfcfc;
+            --border: #e2e8f0;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-3xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            --danger: #ef4444;
+            --radius: 16px;
+            --radius-lg: 24px;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.95);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --glass-bg: rgba(15, 23, 42, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --sidebar-bg: #1a202c;
+            --primary: #4fd1c5;
+            --primary-dark: #38b2ac;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Outfit', sans-serif;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            padding-top: 0 !important;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, var(--bg-main) 0%, #1a202c 100%);
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #002a31 100%);
+            color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            position: relative;
+            z-index: 10;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        [data-theme="dark"] .sidebar {
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #0f172a 100%);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-img {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: #ffffff;
+            padding: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 2px solid var(--secondary);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #ffffff 0%, #e0f2f1 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 2px solid var(--secondary);
+        }
+
+        .logo-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .logo-section h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            line-height: 1.3;
+            color: #ffffff;
+        }
+
+        .nav-menu {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius);
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+            width: 100%;
+            font-weight: 500;
+        }
+
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .nav-item span {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(4px);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--secondary) 0%, #38b2ac 100%);
+            color: var(--primary-dark);
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .nav-item.active {
+            background: var(--secondary);
+            color: #00525d;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+        }
+
+        .theme-btn {
+            width: 52px;
+            height: 52px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        [data-theme="dark"] .theme-btn {
+            background: #4fd1c5;
+            border-color: #4fd1c5;
+            color: #00525d;
+        }
+
+        /* ===== MAIN CONTENT AREA ===== */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        .top-bar {
+            padding: 1.5rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 5;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .top-bar h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        [data-theme="dark"] .top-bar h2 {
+            color: var(--secondary);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .live-clock {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 0.65rem 1.25rem;
+            border-radius: 50px;
+            font-variant-numeric: tabular-nums;
+            box-shadow: 0 4px 12px rgba(0, 82, 93, 0.3);
+        }
+
+        [data-theme="dark"] .live-clock {
+            background: linear-gradient(135deg, var(--secondary) 0%, #38b2ac 100%);
+        }
+
+        .live-time {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        [data-theme="dark"] .live-time {
+            color: #00525d;
+        }
+
+        .live-separator {
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 300;
+        }
+
+        [data-theme="dark"] .live-separator {
+            color: rgba(0, 82, 93, 0.5);
+        }
+
+        .live-date {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        [data-theme="dark"] .live-date {
+            color: #003f47;
+        }
+
+        #content-area {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+            background: radial-gradient(ellipse at top right, rgba(79, 209, 197, 0.15), transparent 50%),
+                radial-gradient(ellipse at bottom left, rgba(0, 82, 93, 0.1), transparent 50%);
+        }
+
+        /* ===== GLASS CARDS ===== */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-3xl);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass:hover {
+            box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.25), 0 15px 15px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ===== STATS GRID ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-3xl);
+        }
+
+        .stat-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 82, 93, 0.35);
+        }
+
+        .stat-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .stat-info h4 {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+
+        .stat-info p {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -1px;
+        }
+
+        [data-theme="dark"] .stat-info p {
+            color: var(--secondary);
+        }
+
+        /* ===== TABLE STYLING ===== */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: var(--radius);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 1.25rem 1rem;
+            color: var(--primary);
+            font-weight: 700;
+            border-bottom: 2px solid var(--primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        [data-theme="dark"] th {
+            color: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(0, 82, 93, 0.04);
+        }
+
+        [data-theme="dark"] tr:hover td {
+            background: rgba(79, 209, 197, 0.08);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 82, 93, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 82, 93, 0.45);
+        }
+
+        [data-theme="dark"] .btn-primary {
+            background: linear-gradient(135deg, var(--secondary) 0%, #38b2ac 100%);
+            color: #00525d;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary) 0%, #38b2ac 100%);
+            color: #00525d;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.35);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.45);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-danger:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .badge {
+            padding: 6px 14px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* ===== FORMS ===== */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 82, 93, 0.15);
+        }
+
+        [data-theme="dark"] .form-control:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 4px rgba(79, 209, 197, 0.2);
+        }
+
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay:not(.hidden) {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 520px;
+            padding: 2.5rem;
+            transform: translateY(20px) scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+        }
+
+        .modal-content.wide {
+            max-width: 900px;
+        }
+
+        .modal-overlay:not(.hidden) .modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        [data-theme="dark"] .modal-header h3 {
+            color: var(--secondary);
+        }
+
+        .close-modal {
+            background: transparent;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            line-height: 1;
+            transition: color 0.2s, transform 0.2s;
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+            transform: rotate(90deg);
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .content-fade {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ===== DUTY GRID ===== */
+        .duty-grid {
+            display: grid;
+            grid-template-columns: 160px repeat(5, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        [data-theme="dark"] .duty-grid {
+            border-color: var(--secondary);
+        }
+
+        .grid-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1.25rem;
+            font-weight: 700;
+            text-align: center;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        [data-theme="dark"] .grid-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, #38b2ac 100%);
+            color: #00525d;
+        }
+
+        .grid-cell {
+            background: var(--bg-card);
+            padding: 1rem;
+            min-height: 90px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .location-name {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        [data-theme="dark"] .location-name {
+            color: var(--secondary);
+        }
+
+        .assignment-badge {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 3px 8px rgba(0, 82, 93, 0.25);
+        }
+
+        [data-theme="dark"] .assignment-badge {
+            background: linear-gradient(135deg, var(--secondary) 0%, #38b2ac 100%);
+            color: #00525d;
+        }
+
+        .assignment-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0, 82, 93, 0.35);
+        }
+
+        .empty-slot {
+            border: 2px dashed var(--border);
+            flex: 1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .empty-slot:hover {
+            background: rgba(0, 82, 93, 0.08);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        [data-theme="dark"] .empty-slot:hover {
+            background: rgba(79, 209, 197, 0.1);
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+                padding: 1rem;
+            }
+
+            .logo-section {
+                padding: 0.75rem;
+            }
+
+            .logo-icon {
+                width: 44px;
+                height: 44px;
+            }
+
+            .logo-section h1 {
+                font-size: 1rem;
+            }
+
+            #content-area {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .nav-menu {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                justify-content: center;
+            }
+
+            .nav-item {
+                padding: 0.75rem 1rem;
+            }
+
+            .nav-item span {
+                display: none;
+            }
+
+            .top-bar {
+                padding: 1rem 1.5rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .duty-grid {
+                grid-template-columns: 100px repeat(5, 1fr);
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+    <!-- PDF libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
@@ -910,16 +915,6 @@ tr:hover td {
             <header class="top-bar">
                 <h2 id="view-title">Panel</h2>
                 <div class="user-info">
-                    <button class="btn btn-outline" onclick="openDataModal()"
-                        style="margin-right: 1rem; padding: 0.4rem 0.8rem; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-main);">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <polyline points="7 10 12 15 17 10" />
-                            <line x1="12" y1="15" x2="12" y2="3" />
-                        </svg>
-                        Nüsxələmə
-                    </button>
                     <div class="live-clock">
                         <span id="live-time" class="live-time">00:00:00</span>
                         <span class="live-separator">•</span>
@@ -948,194 +943,215 @@ tr:hover td {
     </div>
 
     <script>
-const createSched = (m, tu, w, th, f) => {
-    const days = ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə'];
-    const data = [m, tu, w, th, f];
-    const schedule = {};
-    days.forEach((day, i) => {
-        schedule[day] = [1, 2, 3, 4, 5, 6, 7, 8].map(h => ({ hour: h, isBusy: data[i].includes(h) }));
-    });
-    return schedule;
-};
+        const createSched = (m, tu, w, th, f) => {
+            const days = ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə'];
+            const data = [m, tu, w, th, f];
+            const schedule = {};
+            days.forEach((day, i) => {
+                schedule[day] = [1, 2, 3, 4, 5, 6, 7, 8].map(h => ({ hour: h, isBusy: data[i].includes(h) }));
+            });
+            return schedule;
+        };
 
-const state = {
-    view: 'dashboard',
-    teachers: (() => {
-        // Əvvəlcə yaddaşa bax, varsa onu qaytar
-        const stored = localStorage.getItem('teachers');
-        if (stored) return JSON.parse(stored);
+        const state = {
+            view: 'dashboard',
+            teachers: (() => {
+                // Əvvəlcə yaddaşa bax, varsa onu qaytar
+                const stored = localStorage.getItem('teachers');
+                if (stored) return JSON.parse(stored);
 
-        const rawData = [
-            { id: 101, name: 'Aynurə', surname: 'Qurban', branch: 'Az-dili/Ədəb', hourly: false, b: [[1, 2, 3, 4, 5, 6], [1, 2, 3], [], [1, 2, 4], [1, 2, 4]] },
-            { id: 102, name: 'Nənəxanım', surname: 'Qəfərova', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3], [1, 2, 3], [1, 2, 3], []] },
-            { id: 103, name: 'Könül', surname: 'Əhmədova', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6, 7, 8], [1, 3, 4], [1, 2, 3], [1, 2, 4], [1, 2]] },
-            { id: 104, name: 'Mədinə', surname: 'Məmmədova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [], [1, 2, 3], [1, 2, 3, 4], [1]] },
-            { id: 105, name: 'Gülnar', surname: 'Səttarlı', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [], [], [], [1, 2, 3, 4]] },
-            { id: 106, name: 'Xəyalə', surname: 'Əsgərli', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [], [1, 2, 3, 4], [], [1, 2, 3, 4]] },
-            { id: 107, name: 'Məhbubə', surname: 'Talıblı', branch: 'Müəllim', hourly: false, b: [[1, 4, 5, 6, 7, 8], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3], [1, 2, 3, 4]] },
-            { id: 108, name: 'Fəridə', surname: 'Alqayeva', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7, 8], [1, 2, 3], [1, 2], [1, 2], [1, 2, 3, 4]] },
-            { id: 109, name: 'Fərqanə', surname: 'Qənbərli', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6], [1, 2, 3], [], [], [1, 2, 3, 4]] },
-            { id: 110, name: 'Aytac', surname: 'Əhmədova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1, 2, 3, 4], [], [1, 3], []] },
-            { id: 111, name: 'Günel', surname: 'Axundova', branch: 'Müəllim', hourly: false, b: [[1, 3, 4, 5, 6], [1, 2, 3], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 4]] },
-            { id: 112, name: 'Saffet', surname: 'Yılmaz', branch: 'Müəllim', hourly: false, b: [[1, 2, 4, 5, 6, 7], [1], [1, 2], [1, 2, 3], [1, 2]] },
-            { id: 113, name: 'Adil', surname: 'Çaxoyev', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1, 2, 3, 4], [1, 2, 3, 4], [1], [1, 2, 3, 4]] },
-            { id: 114, name: 'Şəbnəm', surname: 'Zeynalova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [], [1, 2], [1, 2, 3, 4], [1, 2]] },
-            { id: 115, name: 'Pərvin', surname: 'Əşari', branch: 'Müəllim', hourly: false, b: [[1, 3, 4, 5, 6, 8], [1, 2, 3], [1, 2, 4], [1, 2, 3, 4], [1, 4]] },
-            { id: 116, name: 'Fatma', surname: 'Valiyev', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6], [1, 2], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2]] },
-            { id: 117, name: 'Xəyalə', surname: 'Qiyasova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1, 2, 3, 4], [], [1, 2, 3], [1, 2, 3, 4]] },
-            { id: 118, name: 'Şamil', surname: 'Süleymanov.', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]] },
-            { id: 119, name: 'Emin', surname: 'Sultanzadə', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7, 8], [1, 2], [], [], [1, 2]] },
-            { id: 120, name: 'Aytac', surname: 'Musabəyli', branch: 'İngilis dili', hourly: false, b: [[1, 3, 4, 5, 6, 7, 8], [1, 2], [1, 2, 3, 4], [1, 4], [1, 2, 3]] },
-            { id: 121, name: 'İlahə', surname: 'Əkbərova', branch: 'İngilis dili', hourly: false, b: [[1, 3, 5, 6, 7], [1, 3, 4], [1, 2], [1, 2, 4], [1]] },
-            { id: 122, name: 'Sura', surname: 'Kərimova', branch: 'İngilis dili', hourly: false, b: [[1, 2, 3, 5, 6, 7, 8], [1, 3, 4], [1, 2, 3], [1, 2], [1, 2, 3, 4]] },
-            { id: 123, name: 'Günel', surname: 'Hətəmzadə', branch: 'İngilis dili', hourly: false, b: [[1, 2, 5, 6, 7, 8], [1, 2, 3, 4], [1, 3, 4], [1, 2, 3, 4], [1, 2, 3]] },
-            { id: 124, name: 'Türkan', surname: 'Qurbanova', branch: 'İngilis dili', hourly: false, b: [[1, 3, 4, 5, 6, 7, 8], [1, 2], [1, 2, 4], [1, 2, 4], [1, 2]] },
-            { id: 125, name: 'Günel', surname: 'Hüseynova', branch: 'İngilis dili', hourly: false, b: [[1, 2, 3, 4, 5, 6], [1, 4], [1, 2, 4], [1, 2, 3], [1, 4]] },
-            { id: 126, name: 'Sevil', surname: 'Babaşova', branch: 'İngilis dili', hourly: false, b: [[1, 5, 6], [1, 3, 4], [1, 2, 3, 4], [], []] },
-            { id: 127, name: 'Gülsəba', surname: 'Aktaş', branch: 'Müəllim', hourly: false, b: [[1, 2, 4, 5, 6, 7, 8], [1], [1, 3], [1, 3, 4], [1, 4]] },
-            { id: 128, name: 'Nəzrin', surname: 'Həsənova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [], [], [], []] },
-            { id: 129, name: 'Fidan', surname: 'Abdulkərimova', branch: 'İbtidai', hourly: false, b: [[1, 5, 6, 7, 8], [1, 3, 4], [1, 4], [1, 2, 3], [1, 4]] },
-            { id: 130, name: 'Fəridə', surname: 'Sultanzadə', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6, 8], [1, 2], [1, 2, 4], [1, 4], [1, 2]] },
-            { id: 131, name: 'Mədinə', surname: 'Nağıyeva', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7, 8], [1, 4], [1], [1, 2, 4], [1, 2, 3, 4]] },
-            { id: 132, name: 'Leyla', surname: 'Şəfaqətova', branch: 'İbtidai', hourly: false, b: [[1, 2, 5, 6, 7, 8], [1], [1, 4], [1, 2, 4], [1, 2, 3, 4]] },
-            { id: 133, name: 'Nərminə', surname: 'İbrahimli', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7, 8], [1, 2, 3, 4], [1], [1, 2, 4], [1]] },
-            { id: 134, name: 'Şəlalə', surname: 'Məcidova', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7, 8], [1, 2, 3, 4], [1, 2], [1], [1]] },
-            { id: 135, name: 'Gülnar', surname: 'İbrahimova', branch: 'Müəllim', hourly: false, b: [[1, 2, 5, 6, 7], [1, 2], [1], [1, 2], [1, 2, 3]] },
-            { id: 136, name: 'Sənubər', surname: 'Baxşəliyeva', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7, 8], [1, 2], [1, 2, 3], [1, 2], [1, 2, 4]] },
-            { id: 137, name: 'Gültəkin', surname: 'Qululu', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1], [1, 2], [1], []] },
-            { id: 138, name: 'Aygün', surname: 'Mansurova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7], [], [1], [], []] },
-            { id: 140, name: 'Aysu', surname: 'Mirzayeva', branch: 'Müəllim', hourly: false, b: [[2, 4, 6], [], [6, 7, 8], [], [5, 6, 8]] },
-            { id: 141, name: 'Aynur', surname: 'Mammadova', branch: 'Az-dili/Ədəb', hourly: false, b: [[5, 6, 7], [], [7, 8], [], [6, 7, 8, 9]] },
-            { id: 142, name: 'Şahnaz', surname: 'Sarıyeva', branch: 'Müəllim', hourly: false, b: [[2, 3, 4], [2, 3, 4], [2, 4], [], [2, 3, 4]] }
-        ];
+                const rawData = [
+                    { id: 101, name: 'Aynurə', surname: 'Qurban', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6], [1, 2, 3], [], [1, 2, 4], [1, 2, 4]] },
+                    { id: 102, name: 'Nənəxanım', surname: 'Qəfərova', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3], [1, 2, 3], [1, 2, 3], []] },
+                    { id: 103, name: 'Könül', surname: 'Əhmədova', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6, 7, 8], [1, 3, 4], [1, 2, 3], [1, 2, 4], [1, 2]] },
+                    { id: 104, name: 'Mədinə', surname: 'Məmmədova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [], [1, 2, 3], [1, 2, 3, 4], [1]] },
+                    { id: 105, name: 'Gülnar', surname: 'Səttarlı', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [], [], [], [1, 2, 3, 4]] },
+                    { id: 106, name: 'Xəyalə', surname: 'Əsgərli', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [], [1, 2, 3, 4], [], [1, 2, 3, 4]] },
+                    { id: 107, name: 'Məhbubə', surname: 'Talıblı', branch: 'Müəllim', hourly: false, b: [[1, 4, 5, 6, 7, 8], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3], [1, 2, 3, 4]] },
+                    { id: 108, name: 'Fəridə', surname: 'Alqayeva', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7, 8], [1, 2, 3], [1, 2], [1, 2], [1, 2, 3, 4]] },
+                    { id: 109, name: 'Fərqanə', surname: 'Qənbərli', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6], [1, 2, 3], [], [], [1, 2, 3, 4]] },
+                    { id: 110, name: 'Aytac', surname: 'Əhmədova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1, 2, 3, 4], [], [1, 3], []] },
+                    { id: 111, name: 'Günel', surname: 'Axundova', branch: 'Müəllim', hourly: false, b: [[1, 3, 4, 5, 6], [1, 2, 3], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 4]] },
+                    { id: 112, name: 'Saffet', surname: 'Yılmaz', branch: 'Müəllim', hourly: false, b: [[1, 2, 4, 5, 6, 7], [1], [1, 2], [1, 2, 3], [1, 2]] },
+                    { id: 113, name: 'Adil', surname: 'Çaxoyev', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1, 2, 3, 4], [1, 2, 3, 4], [1], [1, 2, 3, 4]] },
+                    { id: 114, name: 'Şəbnəm', surname: 'Zeynalova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [], [1, 2], [1, 2, 3, 4], [1, 2]] },
+                    { id: 115, name: 'Pərvin', surname: 'Əşari', branch: 'Müəllim', hourly: false, b: [[1, 3, 4, 5, 6, 8], [1, 2, 3], [1, 2, 4], [1, 2, 3, 4], [1, 4]] },
+                    { id: 116, name: 'Fatma', surname: 'Valiyev', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6], [1, 2], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2]] },
+                    { id: 117, name: 'Xəyalə', surname: 'Qiyasova', branch: 'İdman', hourly: true, b: [[1, 5, 6], [1, 2, 3, 4], [], [1, 2, 3], [1, 2, 3, 4]] },
+                    { id: 118, name: 'Şamil', surname: 'Süleymanov.', branch: 'İdman', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]] },
+                    { id: 119, name: 'Emin', surname: 'Sultanzadə', branch: 'İdman', hourly: true, b: [[1, 5, 6, 7, 8], [1, 2], [], [], [1, 2]] },
+                    { id: 120, name: 'Aytac', surname: 'Musabəyli', branch: 'Müəllim', hourly: false, b: [[1, 3, 4, 5, 6, 7, 8], [1, 2], [1, 2, 3, 4], [1, 4], [1, 2, 3]] },
+                    { id: 121, name: 'İlahə', surname: 'Əkbərova', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7], [1, 3, 4], [1, 2], [1, 2, 4], [1]] },
+                    { id: 122, name: 'Sura', surname: 'Kərimova', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6, 7, 8], [1, 3, 4], [1, 2, 3], [1, 2], [1, 2, 3, 4]] },
+                    { id: 123, name: 'Günel', surname: 'Hətəmzadə', branch: 'Müəllim', hourly: false, b: [[1, 2, 5, 6, 7, 8], [1, 2, 3, 4], [1, 3, 4], [1, 2, 3, 4], [1, 2, 3]] },
+                    { id: 124, name: 'Türkan', surname: 'Qurbanova', branch: 'Müəllim', hourly: false, b: [[1, 3, 4, 5, 6, 7, 8], [1, 2], [1, 2, 4], [1, 2, 4], [1, 2]] },
+                    { id: 125, name: 'Günel', surname: 'Hüseynova', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6], [1, 4], [1, 2, 4], [1, 2, 3], [1, 4]] },
+                    { id: 126, name: 'Sevil', surname: 'Babaşova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1, 3, 4], [1, 2, 3, 4], [], []] },
+                    { id: 127, name: 'Gülsəba', surname: 'Aktaş', branch: 'Müəllim', hourly: false, b: [[1, 2, 4, 5, 6, 7, 8], [1], [1, 3], [1, 3, 4], [1, 4]] },
+                    { id: 128, name: 'Nəzrin', surname: 'Həsənova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [], [], [], []] },
+                    { id: 129, name: 'Fidan', surname: 'Abdulkərimova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7, 8], [1, 3, 4], [1, 4], [1, 2, 3], [1, 4]] },
+                    { id: 130, name: 'Fəridə', surname: 'Sultanzadə', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6, 8], [1, 2], [1, 2, 4], [1, 4], [1, 2]] },
+                    { id: 131, name: 'Mədinə', surname: 'Nağıyeva', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7, 8], [1, 4], [1], [1, 2, 4], [1, 2, 3, 4]] },
+                    { id: 132, name: 'Leyla', surname: 'Şəfaqətova', branch: 'Müəllim', hourly: false, b: [[1, 2, 5, 6, 7, 8], [1], [1, 4], [1, 2, 4], [1, 2, 3, 4]] },
+                    { id: 133, name: 'Nərminə', surname: 'İbrahimli', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7, 8], [1, 2, 3, 4], [1], [1, 2, 4], [1]] },
+                    { id: 134, name: 'Şəlalə', surname: 'Məcidova', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7, 8], [1, 2, 3, 4], [1, 2], [1], [1]] },
+                    { id: 135, name: 'Gülnar', surname: 'İbrahimova', branch: 'Müəllim', hourly: false, b: [[1, 2, 5, 6, 7], [1, 2], [1], [1, 2], [1, 2, 3]] },
+                    { id: 136, name: 'Sənubər', surname: 'Baxşəliyeva', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7, 8], [1, 2], [1, 2, 3], [1, 2], [1, 2, 4]] },
+                    { id: 137, name: 'Gültəkin', surname: 'Qululu', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1], [1, 2], [1], []] },
+                    { id: 138, name: 'Aygün', surname: 'Mansurova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7], [], [1], [], []] },
+                    { id: 140, name: 'Aysu', surname: 'Mirzayeva', branch: 'Müəllim', hourly: false, b: [[2, 4, 6], [], [6, 7, 8], [], [5, 6, 8]] },
+                    { id: 141, name: 'Aynur', surname: 'Mammadova', branch: 'Müəllim', hourly: false, b: [[5, 6, 7], [], [7, 8], [], [6, 7, 8, 9]] },
+                    { id: 142, name: 'Şahnaz', surname: 'Sarıyeva', branch: 'Müəllim', hourly: false, b: [[2, 3, 4], [2, 3, 4], [2, 4], [], [2, 3, 4]] }
+                ];
 
-        return rawData.map(t => ({
-            id: t.id,
-            name: t.name,
-            surname: t.surname,
-            branch: t.branch,
-            hourly: t.hourly || false,
-            schedule: createSched(t.b[0], t.b[1], t.b[2], t.b[3], t.b[4])
-        }));
-    })(),
-    schedulePeriods: [1, 2, 3, 4, 5, 6, 7, 8],
-    locations: JSON.parse(localStorage.getItem('locations')) || [
-        { id: 1, name: 'A-blok ətrafı' },
-        { id: 2, name: 'B-blok ətrafı' },
-        { id: 3, name: 'C-blok ətrafı' },
-        { id: 4, name: 'D-blok ətrafı' },
-        { id: 5, name: 'B-blok daxili' },
-        { id: 6, name: 'C-blok daxili' },
-        { id: 7, name: 'D-blok daxili' },
-        { id: 8, name: 'Yeməkxana - 1' },
-        { id: 9, name: 'Yeməkxana - 2' },
-        { id: 10, name: 'İdman zalı' }
-    ],
-    assignments: JSON.parse(localStorage.getItem('assignments')) || {},
-    days: ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə']
-};
+                return rawData.map(t => ({
+                    id: t.id,
+                    name: t.name,
+                    surname: t.surname,
+                    branch: t.branch,
+                    hourly: t.hourly || false,
+                    schedule: createSched(t.b[0], t.b[1], t.b[2], t.b[3], t.b[4])
+                }));
+            })(),
+            schedulePeriods: [1, 2, 3, 4, 5, 6, 7, 8],
+            locations: JSON.parse(localStorage.getItem('locations')) || [
+                { id: 1, name: 'A-blok ətrafı' },
+                { id: 2, name: 'B-blok ətrafı' },
+                { id: 3, name: 'C-blok ətrafı' },
+                { id: 4, name: 'D-blok ətrafı' },
+                { id: 5, name: 'B-blok daxili' },
+                { id: 6, name: 'C-blok daxili' },
+                { id: 7, name: 'D-blok daxili' },
+                { id: 8, name: 'Yeməkxana - 1' },
+                { id: 9, name: 'Yeməkxana - 2' },
+                { id: 10, name: 'İdman zalı' }
+            ],
+            assignments: JSON.parse(localStorage.getItem('assignments')) || {},
+            days: ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə']
+        };
 
-// Tətbiqi başlat
-document.addEventListener('DOMContentLoaded', () => {
-    setupNavigation();
-    updateDateTime();
-    startClock();
-    renderView();
-    setupTheme();
-});
-
-function saveState() {
-    localStorage.setItem('teachers', JSON.stringify(state.teachers));
-    localStorage.setItem('locations', JSON.stringify(state.locations));
-    localStorage.setItem('assignments', JSON.stringify(state.assignments));
-}
-
-// Canlı saat
-function startClock() {
-    updateDateTime();
-    setInterval(updateDateTime, 1000);
-}
-
-function updateDateTime() {
-    const now = new Date();
-
-    // Saat
-    const timeElement = document.getElementById('live-time');
-    if (timeElement) {
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        timeElement.textContent = `${hours}:${minutes}:${seconds}`;
-    }
-
-    // Tarix
-    const dateElement = document.getElementById('current-date');
-    if (dateElement) {
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        dateElement.textContent = now.toLocaleDateString('az-AZ', options);
-    }
-}
-
-// Naviqasiya
-function setupNavigation() {
-    document.querySelectorAll('.nav-item').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            state.view = btn.dataset.view;
+        // Tətbiqi başlat
+        document.addEventListener('DOMContentLoaded', () => {
+            patchSportsTeachers(); // İxtisasları yoxla və düzəlt
+            setupNavigation();
+            updateDateTime();
+            startClock();
             renderView();
+            setupTheme();
         });
-    });
-}
 
-function setupTheme() {
-    const themeToggle = document.getElementById('theme-toggle');
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
+        // Köhnə data-lı istifadəçilər üçün idman müəllimlərini "İdman" ixtisasına məcburi keçir
+        function patchSportsTeachers() {
+            const sportsSurnames = ['Sultanzadə', 'Qiyasova', 'Süleymanov'];
+            let changed = false;
+            state.teachers.forEach(t => {
+                if (t.surname && sportsSurnames.some(s => t.surname.includes(s))) {
+                    if (t.branch !== 'İdman') {
+                        t.branch = 'İdman';
+                        changed = true;
+                    }
+                    // Emin və Xəyaləni saat hesablıya keçir (əgər deyilsə)
+                    if ((t.surname.includes('Sultanzadə') || t.surname.includes('Qiyasova')) && !t.hourly) {
+                        t.hourly = true;
+                        changed = true;
+                    }
+                }
+            });
+            if (changed) saveState();
+        }
 
-    themeToggle.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', nextTheme);
-        localStorage.setItem('theme', nextTheme);
-    });
-}
+        function saveState() {
+            localStorage.setItem('teachers', JSON.stringify(state.teachers));
+            localStorage.setItem('locations', JSON.stringify(state.locations));
+            localStorage.setItem('assignments', JSON.stringify(state.assignments));
+        }
 
-// Render məntiqi
-function renderView() {
-    const contentArea = document.getElementById('content-area');
-    const title = document.getElementById('view-title');
-    contentArea.innerHTML = '';
-    contentArea.classList.remove('content-fade');
-    void contentArea.offsetWidth;
-    contentArea.classList.add('content-fade');
+        // Canlı saat
+        function startClock() {
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+        }
 
-    switch (state.view) {
-        case 'dashboard':
-            title.textContent = 'İdarəetmə Paneli';
-            renderDashboard(contentArea);
-            break;
-        case 'schedule':
-            title.textContent = 'Növbə Cədvəli';
-            renderSchedule(contentArea);
-            break;
-        case 'teachers':
-            title.textContent = 'Müəllim İdarəetməsi';
-            state.teacherSearch = ''; // Axtarışı sıfırla
-            renderTeachers(contentArea);
-            break;
-        case 'locations':
-            title.textContent = 'Növbə Yerləri';
-            renderLocations(contentArea);
-            break;
-    }
-}
+        function updateDateTime() {
+            const now = new Date();
 
-function renderDashboard(container) {
-    const totalAssignments = Object.keys(state.assignments).length;
-    const assignedTeachers = new Set(Object.values(state.assignments)).size;
+            // Saat
+            const timeElement = document.getElementById('live-time');
+            if (timeElement) {
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                timeElement.textContent = `${hours}:${minutes}:${seconds}`;
+            }
 
-    container.innerHTML = `
+            // Tarix
+            const dateElement = document.getElementById('current-date');
+            if (dateElement) {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                dateElement.textContent = now.toLocaleDateString('az-AZ', options);
+            }
+        }
+
+        // Naviqasiya
+        function setupNavigation() {
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.view = btn.dataset.view;
+                    renderView();
+                });
+            });
+        }
+
+        function setupTheme() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', nextTheme);
+                localStorage.setItem('theme', nextTheme);
+            });
+        }
+
+        // Render məntiqi
+        function renderView() {
+            const contentArea = document.getElementById('content-area');
+            const title = document.getElementById('view-title');
+            contentArea.innerHTML = '';
+            contentArea.classList.remove('content-fade');
+            void contentArea.offsetWidth;
+            contentArea.classList.add('content-fade');
+
+            switch (state.view) {
+                case 'dashboard':
+                    title.textContent = 'İdarəetmə Paneli';
+                    renderDashboard(contentArea);
+                    break;
+                case 'schedule':
+                    title.textContent = 'Növbə Cədvəli';
+                    renderSchedule(contentArea);
+                    break;
+                case 'teachers':
+                    title.textContent = 'Müəllim İdarəetməsi';
+                    state.teacherSearch = ''; // Axtarışı sıfırla
+                    renderTeachers(contentArea);
+                    break;
+                case 'locations':
+                    title.textContent = 'Növbə Yerləri';
+                    renderLocations(contentArea);
+                    break;
+            }
+        }
+
+        function renderDashboard(container) {
+            const totalAssignments = Object.keys(state.assignments).length;
+            const assignedTeachers = new Set(Object.values(state.assignments)).size;
+
+            container.innerHTML = `
         <div class="stats-grid">
             <div class="stat-card glass">
                 <div class="stat-icon" style="background: linear-gradient(135deg, #00525d 0%, #003f47 100%)">
@@ -1183,89 +1199,127 @@ function renderDashboard(container) {
             ${renderTodaySchedule()}
         </div>
     `;
-}
-
-function renderTodaySchedule() {
-    const today = new Date().getDay();
-    const dayNames = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'];
-    const currentDay = dayNames[today];
-
-    if (today === 0 || today === 6) {
-        return `
-            <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
-                <svg style="width: 64px; height: 64px; margin-bottom: 1rem; opacity: 0.5;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <p style="font-size: 1.1rem;">Həftə sonu növbə yoxdur.</p>
-            </div>
-        `;
-    }
-
-    const todayAssignments = state.locations.map(loc => {
-        const teacherId = state.assignments[`${currentDay}-${loc.id}`];
-        const teacher = state.teachers.find(t => t.id == teacherId);
-        return { loc: loc.name, teacher: teacher ? `${teacher.name} ${teacher.surname}` : null, branch: teacher?.branch };
-    });
-
-    return `
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Növbə Yeri</th>
-                        <th>Müəllim</th>
-                        <th>İxtisas</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${todayAssignments.map(a => `
-                        <tr>
-                            <td><strong>${a.loc}</strong></td>
-                            <td>
-                                ${a.teacher
-            ? `<span class="badge btn-primary">${a.teacher}</span>`
-            : `<span style="color: var(--text-muted); font-style: italic;">Təyin edilməyib</span>`
         }
-                            </td>
-                            <td style="color: var(--text-muted);">${a.branch || '-'}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-        </div>
-    `;
-}
 
-function renderSchedule(container) {
-    container.innerHTML = `
-        <div class="glass" style="padding: 1.5rem; overflow-x: auto;">
-            <div class="duty-grid" id="main-duty-grid">
-                <div class="grid-header" style="background: transparent; color: var(--text-main); font-weight: 700;">Növbə Yerləri</div>
-                ${state.days.map(day => `<div class="grid-header">${day}</div>`).join('')}
-                
-                ${state.locations.map(loc => `
-                    <div class="grid-cell location-name">${loc.name}</div>
-                    ${state.days.map(day => {
-        const teacherId = state.assignments[`${day}-${loc.id}`];
-        const teacher = state.teachers.find(t => t.id == teacherId);
-        return `
-                            <div class="grid-cell">
-                                ${teacher ? `
-                                    <div class="assignment-badge" onclick="openAssignModal('${day}', ${loc.id})">
-                                        ${teacher.name} ${teacher.surname}
-                                    </div>
-                                ` : `
-                                    <div class="empty-slot" onclick="openAssignModal('${day}', ${loc.id})">+ Əlavə et</div>
-                                `}
+        // Updated Render Dashboard - Today's Schedule
+        function renderTodaySchedule() {
+            const today = new Date().getDay();
+            const dayNames = ['Bazar', 'Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə', 'Şənbə'];
+            const currentDay = dayNames[today];
+
+            if (today === 0 || today === 6) {
+                return `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <svg style="width: 64px; height: 64px; margin-bottom: 1rem; opacity: 0.5;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <p style="font-size: 1.1rem;">Həftə sonu növbə yoxdur.</p>
+                    </div>
+                `;
+            }
+
+            const todayAssignments = state.locations.map(loc => {
+                const teacherIds = state.assignments[`${currentDay}-${loc.id}`] || [];
+                const assigned = teacherIds.map(id => state.teachers.find(t => t.id == id)).filter(Boolean);
+                return {
+                    loc: loc.name,
+                    teachers: assigned.map(t => `${t.name} ${t.surname}`),
+                    branches: assigned.map(t => t.branch).join(', ')
+                };
+            });
+
+            return `
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Növbə Yeri</th>
+                                <th>Müəllim(lər)</th>
+                                <th>İxtisas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${todayAssignments.map(a => `
+                                <tr>
+                                    <td>
+                                        <strong>${a.loc}</strong>
+                                        ${a.loc.includes('Yeməkxana') && a.loc.includes('1') ? '<br><small style="color: var(--text-muted);">11:50 - 12:40</small>' : ''}
+                                        ${a.loc.includes('Yeməkxana') && a.loc.includes('2') ? '<br><small style="color: var(--text-muted);">12:40 - 13:30</small>' : ''}
+                                    </td>
+                                    <td>
+                                        ${a.teachers.length > 0
+                    ? a.teachers.map(t => `<div class="badge btn-primary" style="margin-bottom: 4px; display: block;">${t}</div>`).join('')
+                    : `<span style="color: var(--text-muted); font-style: italic;">Təyin edilməyib</span>`
+                }
+                                    </td>
+                                    <td style="color: var(--text-muted);">${a.branches || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderSchedule(container) {
+            container.innerHTML = `
+                <div class="glass" style="padding: 1.5rem; overflow-x: auto;">
+                    <div style="margin-bottom: 1rem; display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" onclick="exportSchedulePDF()" style="background: #2b6cb0; color: white;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            PDF İxrac Et
+                        </button>
+                        <button class="btn btn-secondary" onclick="openDutyReportModal()" style="background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    Növbə Hesabatı
+                </button>
+                <button class="btn btn-danger" onclick="clearDutySchedule()" style="background: #e53e3e; color: white;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+                            Cədvəli Təmizlə
+                        </button>
+                        <button class="btn btn-primary" onclick="autoAssignDuties()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                            Avtomatik Payla
+                        </button>
+                    </div>
+                    <div class="duty-grid" id="main-duty-grid">
+                        <div class="grid-header" style="background: transparent; color: var(--text-main); font-weight: 700;">Növbə Yerləri</div>
+                        ${state.days.map(day => `<div class="grid-header">${day}</div>`).join('')}
+                        
+                        ${state.locations.map(loc => `
+                            <div class="grid-cell location-name" style="display: flex; flex-direction: column; justify-content: center;">
+                                ${loc.name}
+                                ${loc.name.includes('Yeməkxana') && loc.name.includes('1') ? '<small style="font-weight: 400; opacity: 0.8;">11:50 - 12:40</small>' : ''}
+                                ${loc.name.includes('Yeməkxana') && loc.name.includes('2') ? '<small style="font-weight: 400; opacity: 0.8;">12:40 - 13:30</small>' : ''}
                             </div>
-                        `;
-    }).join('')}
-                `).join('')}
-            </div>
-        </div>
-    `;
-}
+                            ${state.days.map(day => {
+                const teacherIds = state.assignments[`${day}-${loc.id}`] || [];
+                const assigned = teacherIds.map(id => state.teachers.find(t => t.id == id)).filter(Boolean);
+                return `
+                                    <div class="grid-cell" style="padding: 4px;">
+                                        <div style="display: flex; flex-direction: column; gap: 4px; height: 100%;">
+                                            ${assigned.map(t => {
+                    const win = getTeacherStayWindow(t, day);
+                    const winStr = win ? `<span style="font-size: 0.65rem; opacity: 0.7; font-weight: 400;"> [${win.start}-${win.end}]</span>` : '';
+                    return `
+                                                <div class="assignment-badge" onclick="openAssignModal('${day}', ${loc.id})" style="font-size: 0.75rem; padding: 4px 8px; line-height: 1.1; flex-direction: column; align-items: flex-start; gap: 2px;">
+                                                    <div>${t.name} ${t.surname.charAt(0)}.</div>
+                                                    ${winStr}
+                                                </div>
+                                            `}).join('')}
+                                            <div class="empty-slot" onclick="openAssignModal('${day}', ${loc.id})" style="min-height: 30px; font-size: 0.7rem; border-style: ${assigned.length > 0 ? 'solid' : 'dashed'};">
+                                                ${assigned.length > 0 ? '+ Əlavə' : '+ Əlavə et'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+            }).join('')}
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
 
-function renderTeachers(container) {
-    container.innerHTML = `
+        function renderTeachers(container) {
+            container.innerHTML = `
         <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <div style="display: flex; gap: 1rem; align-items: center; flex: 1; min-width: 300px;">
                 <p style="color: var(--text-muted); white-space: nowrap;">Ümumi: <strong>${state.teachers.length}</strong> müəllim</p>
@@ -1274,6 +1328,10 @@ function renderTeachers(container) {
                 </div>
             </div>
             <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-secondary" onclick="openBulkHourlyModal()" style="background: #f59e0b; color: white;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Saat Hesablılar
+                </button>
                 <button class="btn btn-secondary" onclick="openImportModal()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     PDF-dən Yüklə
@@ -1295,6 +1353,7 @@ function renderTeachers(container) {
                         <tr>
                             <th>Ad Soyad</th>
                             <th>İxtisas</th>
+                            <th>Dərs Saatı</th>
                             <th>Əməliyyatlar</th>
                         </tr>
                     </thead>
@@ -1305,16 +1364,19 @@ function renderTeachers(container) {
             </div>
         </div>
     `;
-}
+        }
 
-function renderTeacherRows(teachers) {
-    return teachers.map(t => `
+        function renderTeacherRows(teachers) {
+            return [...teachers]
+                .sort((a, b) => a.name.localeCompare(b.name) || a.surname.localeCompare(b.surname))
+                .map(t => `
         <tr style="cursor: pointer;" onclick="showTeacherSchedule(${t.id})">
             <td>
                 <strong>${t.name} ${t.surname}</strong>
                 ${t.hourly ? '<span style="background: #f59e0b; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px;">Saat hesablı</span>' : ''}
             </td>
             <td style="color: var(--text-muted);">${t.branch}</td>
+            <td align="center"><strong>${t.totalHours || 0}</strong></td>
 
             <td>
                 <button class="btn btn-secondary" onclick="event.stopPropagation(); editTeacher(${t.id})" style="padding: 6px 12px; font-size: 0.85rem;">
@@ -1328,20 +1390,20 @@ function renderTeacherRows(teachers) {
             </td>
         </tr>
     `).join('');
-}
+        }
 
-window.filterTeachers = (query) => {
-    state.teacherSearch = query.toLowerCase();
-    const filtered = state.teachers.filter(t =>
-        t.name.toLowerCase().includes(state.teacherSearch) ||
-        t.surname.toLowerCase().includes(state.teacherSearch) ||
-        t.branch.toLowerCase().includes(state.teacherSearch)
-    );
-    document.getElementById('teacher-table-body').innerHTML = renderTeacherRows(filtered);
-};
+        window.filterTeachers = (query) => {
+            state.teacherSearch = query.toLowerCase();
+            const filtered = state.teachers.filter(t =>
+                t.name.toLowerCase().includes(state.teacherSearch) ||
+                t.surname.toLowerCase().includes(state.teacherSearch) ||
+                t.branch.toLowerCase().includes(state.teacherSearch)
+            );
+            document.getElementById('teacher-table-body').innerHTML = renderTeacherRows(filtered);
+        };
 
-function renderLocations(container) {
-    container.innerHTML = `
+        function renderLocations(container) {
+            container.innerHTML = `
         <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <p style="color: var(--text-muted);">Ümumi: <strong>${state.locations.length}</strong> növbə yeri</p>
             <button class="btn btn-primary" onclick="openLocationModal()">
@@ -1379,51 +1441,143 @@ function renderLocations(container) {
             </div>
         </div>
     `;
-}
+        }
 
-// Modal CRUD məntiqi
-window.openAssignModal = (day, locationId) => {
-    const loc = state.locations.find(l => l.id == locationId);
-    showModal(`Növbə Təyinatı: ${day} - ${loc.name}`, `
-        <div class="form-group">
-            <label>Müəllim Seçin</label>
-            <select id="assign-teacher-select" class="form-control" onchange="window.handleTeacherSelectChange(this, '${day}')">
-                <option value="">-- Boşalt --</option>
-                ${state.teachers.map(t => {
-        const isBusyToday = t.schedule && t.schedule[day] ? t.schedule[day].some(p => p.isBusy) : false;
-        const busyHours = isBusyToday ? t.schedule[day].filter(p => p.isBusy).map(p => p.hour).join(', ') : '';
-        return `
-                    <option value="${t.id}" ${state.assignments[`${day}-${locationId}`] == t.id ? 'selected' : ''}>
-                        ${t.name} ${t.surname} ${isBusyToday ? `(Dərsi var: ${busyHours}. saatlar)` : '(Boşdur)'}
-                    </option>
-                `}).join('')}
-            </select>
-        </div>
-        <div id="teacher-schedule-preview" style="margin-top: 1rem; font-size: 0.85rem; padding: 1rem; background: var(--bg-light); border-radius: 8px;">
-            <p style="color: var(--text-muted);">Müəllim seçdikdə onun <strong>${day}</strong> günü üçün dərs cədvəli burada görünəcək.</p>
-        </div>
-        <button class="btn btn-primary" onclick="saveAssignment('${day}', ${locationId})" style="width: 100%; margin-top: 1rem;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Yadda Saxla
-        </button>
-    `);
-};
 
-window.saveAssignment = (day, locId) => {
-    const teacherId = document.getElementById('assign-teacher-select').value;
-    if (teacherId) {
-        state.assignments[`${day}-${locId}`] = teacherId;
-    } else {
-        delete state.assignments[`${day}-${locId}`];
-    }
-    saveState();
-    closeModal();
-    renderView();
-};
+        // Data Migration and Initialization
+        window.migrateData = () => {
+            if (!state.assignments) state.assignments = {};
+            Object.keys(state.assignments).forEach(key => {
+                if (state.assignments[key] && !Array.isArray(state.assignments[key])) {
+                    state.assignments[key] = [state.assignments[key]];
+                }
+            });
+        };
+        migrateData();
 
-window.openTeacherModal = (teacherId = null) => {
-    const teacher = teacherId ? state.teachers.find(t => t.id == teacherId) : { name: '', surname: '', branch: '' };
-    showModal(teacherId ? 'Müəllim Məlumatlarını Yenilə' : 'Yeni Müəllim Əlavə Et', `
+        // Updated Modal Assign
+        window.openAssignModal = (day, locationId) => {
+            const loc = state.locations.find(l => l.id == locationId);
+            const teacherIds = state.assignments[`${day}-${locationId}`] || [];
+
+            const dutyCounts = {};
+            state.teachers.forEach(t => dutyCounts[t.id] = 0);
+            Object.values(state.assignments).forEach(ids => {
+                if (Array.isArray(ids)) {
+                    ids.forEach(tid => { if (dutyCounts[tid] !== undefined) dutyCounts[tid]++; });
+                }
+            });
+
+            const assignedTeachers = teacherIds.map(id => state.teachers.find(t => t.id == id)).filter(Boolean);
+
+            // Coverage Calculation
+            const coverage = new Array(8).fill(false);
+            assignedTeachers.forEach(t => {
+                const win = getTeacherStayWindow(t, day);
+                if (win) {
+                    for (let i = win.start; i <= win.end; i++) coverage[i - 1] = true;
+                }
+            });
+
+            showModal(`Növbə Təyinatı: ${day} - ${loc.name}`, `
+                <div style="margin-bottom: 1rem; background: var(--bg-light); padding: 1rem; border-radius: 8px;">
+                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Günün Əhatə Olunması (1-8 saatlar):</label>
+                    <div style="display: flex; gap: 4px;">
+                        ${coverage.map((c, i) => `
+                            <div style="flex: 1; height: 12px; border-radius: 4px; background: ${c ? '#10b981' : '#e5e7eb'}; border: 1px solid ${c ? '#059669' : '#d1d5db'};" title="${i + 1}-cil saat ${c ? 'Örtülüb' : 'BOŞDUR'}"></div>
+                        `).join('')}
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 0.7rem; color: var(--text-muted);">
+                        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="font-weight: 700; display: block; margin-bottom: 0.5rem; color: var(--primary);">Təyin edilmiş müəllimlər:</label>
+                    <div id="assigned-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        ${assignedTeachers.length > 0 ? assignedTeachers.map(t => {
+                const win = getTeacherStayWindow(t, day);
+                return `
+                            <div style="display:flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border);">
+                                <div>
+                                    <strong>${t.name} ${t.surname}</strong>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">Məktəbdədir: ${win ? `${win.start} - ${win.end}` : 'Məlum deyil'}</div>
+                                </div>
+                                <button class="btn btn-danger" onclick="removeAssignment('${day}', ${locationId}, ${t.id})" style="padding: 4px 10px; font-size: 0.8rem;">Sil</button>
+                            </div>
+                        `}).join('') : '<p style="color: var(--text-muted); font-style: italic;">Heç kim təyin edilməyib.</p>'}
+                    </div>
+                </div>
+
+                <div class="form-group" style="border-top: 1px solid var(--border); padding-top: 1rem;">
+                    <label style="font-weight: 700;">Yeni müəllim əlavə et: ${loc.name.toLowerCase().includes('idman') ? '<span style="color:var(--primary); font-size:0.8em; font-weight:900;">(Yalnız İdman ixtisası)</span>' : ''}</label>
+                    <select id="assign-teacher-select" class="form-control" onchange="window.handleTeacherSelectChange(this, '${day}')">
+                        <option value="">-- Müəllim Seçin --</option>
+                        ${[...state.teachers]
+                    .sort((a, b) => a.name.localeCompare(b.name) || a.surname.localeCompare(b.surname))
+                    .filter(t => {
+                        // Əllə əlavə etmədə hamı görünsün (alfabetik artıq sort olunub)
+                        // Amma artıq bu yerə yazılıbsa göstərməyə bilərik (isteğe bağlı)
+                        return true;
+                    })
+                    .map(t => {
+                        const isBusyToday = t.schedule && t.schedule[day] ? t.schedule[day].some(p => p.isBusy) : false;
+                        const busyHours = isBusyToday ? t.schedule[day].filter(p => p.isBusy).map(p => p.hour).join(', ') : '';
+                        const win = getTeacherStayWindow(t, day);
+                        const count = dutyCounts[t.id] || 0;
+                        const isAlready = teacherIds.some(tid => String(tid) == String(t.id));
+                        if (isAlready) return '';
+                        return `
+                            <option value="${t.id}">
+                                ${t.name} ${t.surname} [${win ? `${win.start}-${win.end}` : '??'}] (Növbə: ${count}) ${isBusyToday ? '' : '[Dərsi yoxdur]'}
+                            </option>
+                        `}).join('')}
+                    </select>
+                </div>
+                <div id="teacher-schedule-preview" style="margin-top: 1rem; font-size: 0.85rem; padding: 1rem; background: var(--bg-light); border-radius: 8px;">
+                    <p style="color: var(--text-muted);">Seçilən müəllimin dərs cədvəli burada görünəcək.</p>
+                </div>
+                <button class="btn btn-primary" onclick="saveAssignment('${day}', ${locationId})" style="width: 100%; margin-top: 1rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                    Müəllimi siyahıya əlavə et
+                </button>
+            `);
+        };
+
+        window.saveAssignment = (day, locId) => {
+            const select = document.getElementById('assign-teacher-select');
+            const teacherId = select.value;
+            if (!teacherId) {
+                alert('Zəhmət olmasa müəllim seçin!');
+                return;
+            }
+
+            const key = `${day}-${locId}`;
+            if (!state.assignments[key]) state.assignments[key] = [];
+
+            const tid = Number(teacherId);
+            if (!state.assignments[key].includes(tid)) {
+                state.assignments[key].push(tid);
+                saveState();
+                openAssignModal(day, locId);
+                renderView();
+            }
+        };
+
+        window.removeAssignment = (day, locId, teacherId) => {
+            const key = `${day}-${locId}`;
+            if (state.assignments[key]) {
+                state.assignments[key] = state.assignments[key].filter(id => id != teacherId);
+                if (state.assignments[key].length === 0) delete state.assignments[key];
+                saveState();
+                openAssignModal(day, locId);
+                renderView();
+            }
+        };
+
+        window.openTeacherModal = (teacherId = null) => {
+            const teacher = teacherId ? state.teachers.find(t => t.id == teacherId) : { name: '', surname: '', branch: 'Müəllim' };
+            showModal(teacherId ? 'Müəllim Məlumatlarını Yenilə' : 'Yeni Müəllim Əlavə Et', `
         <div class="form-group">
             <label>Ad</label>
             <input type="text" id="t-name" class="form-control" value="${teacher.name}" placeholder="Müəllimin adı">
@@ -1431,6 +1585,10 @@ window.openTeacherModal = (teacherId = null) => {
         <div class="form-group">
             <label>Soyad</label>
             <input type="text" id="t-surname" class="form-control" value="${teacher.surname}" placeholder="Müəllimin soyadı">
+        </div>
+        <div class="form-group">
+            <label>İxtisas</label>
+            <input type="text" id="t-branch" class="form-control" value="${teacher.branch || 'Müəllim'}" placeholder="Məs: Riyaziyyat, İdman">
         </div>
         <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
             <input type="checkbox" id="t-hourly" ${teacher.hourly ? 'checked' : ''} style="width: auto;">
@@ -1445,75 +1603,75 @@ window.openTeacherModal = (teacherId = null) => {
             Yadda Saxla
         </button>
     `);
-};
-
-window.editTeacher = (id) => {
-    openTeacherModal(id);
-};
-
-window.saveTeacher = (id) => {
-    const name = document.getElementById('t-name').value.trim();
-    const surname = document.getElementById('t-surname').value.trim();
-    const hourly = document.getElementById('t-hourly').checked;
-    const totalHours = parseInt(document.getElementById('t-totalHours').value) || 0;
-
-    if (!name || !surname) {
-        alert('Zəhmət olmasa ad və soyad daxil edin!');
-        return;
-    }
-
-    if (id) {
-        const index = state.teachers.findIndex(t => t.id == id);
-        // İxtisas (branch) artıq lazım deyil, onu sabit 'Müəllim' saxlayıram və ya silirəm
-        state.teachers[index] = { ...state.teachers[index], name, surname, hourly, totalHours };
-    } else {
-        const newTeacher = {
-            id: Date.now(),
-            name,
-            surname,
-            branch: 'Müəllim', // Default value
-            hourly,
-            totalHours,
-            schedule: {}
         };
-        // Boş cədvəl yarat
-        state.days.forEach(day => {
-            newTeacher.schedule[day] = state.schedulePeriods.map(h => ({ hour: h, isBusy: false }));
-        });
-        state.teachers.push(newTeacher);
-    }
 
-    saveState();
-    closeModal();
-    renderView();
-};
+        window.editTeacher = (id) => {
+            openTeacherModal(id);
+        };
 
-window.deleteTeacher = (id) => {
-    if (confirm('Bu müəllimi silmək istədiyinizə əminsiniz? Bütün təyinatlar da silinəcək.')) {
-        state.teachers = state.teachers.filter(t => t.id != id);
-        Object.keys(state.assignments).forEach(key => {
-            if (state.assignments[key] == id) delete state.assignments[key];
-        });
-        saveState();
-        renderView();
-    }
-};
+        window.saveTeacher = (id) => {
+            const name = document.getElementById('t-name').value.trim();
+            const surname = document.getElementById('t-surname').value.trim();
+            const branch = document.getElementById('t-branch').value.trim() || 'Müəllim';
+            const hourly = document.getElementById('t-hourly').checked;
+            const totalHours = parseInt(document.getElementById('t-totalHours').value) || 0;
 
-window.deleteAllTeachers = () => {
-    if (confirm('BÜTÜN müəllimləri silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz!')) {
-        if (confirm('Həqiqətən əminsiniz? Bütün məlumatlar silinəcək.')) {
-            state.teachers = [];
-            state.assignments = {};
+            if (!name || !surname) {
+                alert('Zəhmət olmasa ad və soyad daxil edin!');
+                return;
+            }
+
+            if (id) {
+                const index = state.teachers.findIndex(t => t.id == id);
+                state.teachers[index] = { ...state.teachers[index], name, surname, branch, hourly, totalHours };
+            } else {
+                const newTeacher = {
+                    id: Date.now(),
+                    name,
+                    surname,
+                    branch,
+                    hourly,
+                    totalHours,
+                    schedule: {}
+                };
+                // Boş cədvəl yarat
+                state.days.forEach(day => {
+                    newTeacher.schedule[day] = state.schedulePeriods.map(h => ({ hour: h, isBusy: false }));
+                });
+                state.teachers.push(newTeacher);
+            }
+
             saveState();
+            closeModal();
             renderView();
-            alert('Bütün müəllimlər silindi.');
-        }
-    }
-};
+        };
 
-window.openLocationModal = (locId = null) => {
-    const loc = locId ? state.locations.find(l => l.id == locId) : { name: '' };
-    showModal(locId ? 'Yeri Yenilə' : 'Yeni Növbə Yeri Əlavə Et', `
+        window.deleteTeacher = (id) => {
+            if (confirm('Bu müəllimi silmək istədiyinizə əminsiniz? Bütün təyinatlar da silinəcək.')) {
+                state.teachers = state.teachers.filter(t => t.id != id);
+                Object.keys(state.assignments).forEach(key => {
+                    if (state.assignments[key] == id) delete state.assignments[key];
+                });
+                saveState();
+                renderView();
+            }
+        };
+
+        window.deleteAllTeachers = () => {
+            if (confirm('BÜTÜN müəllimləri silmək istədiyinizə əminsiniz? Bu əməliyyat geri qaytarıla bilməz!')) {
+                if (confirm('Həqiqətən əminsiniz? Bütün məlumatlar silinəcək.')) {
+                    state.teachers = [];
+                    state.assignments = {};
+                    saveState();
+                    renderView();
+                    alert('Bütün müəllimlər silindi.');
+                }
+            }
+        };
+
+        window.openLocationModal = (locId = null) => {
+            const loc = locId ? state.locations.find(l => l.id == locId) : { name: '' };
+            showModal(locId ? 'Yeri Yenilə' : 'Yeni Növbə Yeri Əlavə Et', `
         <div class="form-group">
             <label>Növbə Yeri Adı</label>
             <input type="text" id="l-name" class="form-control" value="${loc.name}" placeholder="Məs: A-blok daxili">
@@ -1523,56 +1681,61 @@ window.openLocationModal = (locId = null) => {
             Yadda Saxla
         </button>
     `);
-};
+        };
 
-window.editLocation = (id) => {
-    openLocationModal(id);
-};
+        window.editLocation = (id) => {
+            openLocationModal(id);
+        };
 
-window.saveLocation = (id) => {
-    const name = document.getElementById('l-name').value.trim();
+        window.saveLocation = (id) => {
+            const name = document.getElementById('l-name').value.trim();
 
-    if (!name) {
-        alert('Zəhmət olmasa növbə yeri adını daxil edin!');
-        return;
-    }
+            if (!name) {
+                alert('Zəhmət olmasa növbə yeri adını daxil edin!');
+                return;
+            }
 
-    if (id) {
-        const index = state.locations.findIndex(l => l.id == id);
-        state.locations[index] = { id, name };
-    } else {
-        state.locations.push({ id: Date.now(), name });
-    }
-    saveState();
-    closeModal();
-    renderView();
-};
+            if (id) {
+                const index = state.locations.findIndex(l => l.id == id);
+                state.locations[index] = { id, name };
+            } else {
+                state.locations.push({ id: Date.now(), name });
+            }
+            saveState();
+            closeModal();
+            renderView();
+        };
 
-window.deleteLocation = (id) => {
-    if (confirm('Bu növbə yerini silmək istədiyinizə əminsiniz?')) {
-        state.locations = state.locations.filter(l => l.id != id);
-        Object.keys(state.assignments).forEach(key => {
-            if (key.endsWith(`-${id}`)) delete state.assignments[key];
-        });
-        saveState();
-        renderView();
-    }
-};
+        window.deleteLocation = (id) => {
+            if (confirm('Bu növbə yerini silmək istədiyinizə əminsiniz?')) {
+                state.locations = state.locations.filter(l => l.id != id);
+                Object.keys(state.assignments).forEach(key => {
+                    if (key.endsWith(`-${id}`)) delete state.assignments[key];
+                });
+                saveState();
+                renderView();
+            }
+        };
 
-// Modal alətləri
-function showModal(title, bodyHtml) {
-    document.getElementById('modal-title').innerHTML = title;
-    document.getElementById('modal-body').innerHTML = bodyHtml;
-    document.getElementById('modal-container').classList.remove('hidden');
-}
+        // Modal alətləri
+        function showModal(title, bodyHtml, isWide = false) {
+            const content = document.querySelector('.modal-content');
+            if (isWide) content.classList.add('wide');
+            else content.classList.remove('wide');
 
-function closeModal() {
-    document.getElementById('modal-container').classList.add('hidden');
-}
+            document.getElementById('modal-title').innerHTML = title;
+            document.getElementById('modal-body').innerHTML = bodyHtml;
+            document.getElementById('modal-container').classList.remove('hidden');
+        }
 
-// PDF İdxal Məntiqi
-window.openImportModal = () => {
-    showModal('PDF-dən Müəllim Siyahısını Yüklə', `
+        function closeModal() {
+            document.querySelector('.modal-content').classList.remove('wide');
+            document.getElementById('modal-container').classList.add('hidden');
+        }
+
+        // PDF İdxal Məntiqi
+        window.openImportModal = () => {
+            showModal('PDF-dən Müəllim Siyahısını Yüklə', `
         <div class="import-area" style="text-align: center; padding: 2rem; border: 2px dashed var(--border-light); border-radius: 12px; margin-bottom: 1rem;">
             <input type="file" id="pdf-upload" accept=".pdf" style="display: none;" onchange="handlePDFUpload(event)">
             <label for="pdf-upload" style="cursor: pointer; display: flex; flex-direction: column; align-items: center;">
@@ -1592,265 +1755,736 @@ window.openImportModal = () => {
             <button id="confirm-import" class="btn btn-primary" style="flex: 1; display: none;" onclick="confirmImport()">Siyahını Təsdiqlə</button>
         </div>
     `);
-};
+        };
 
-let tempTeachers = [];
+        let tempTeachers = [];
 
-window.handlePDFUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+        window.handlePDFUpload = async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
 
-    const status = document.getElementById('import-status');
-    status.innerHTML = '<span style="color: var(--primary);">Fayl analiz edilir... Gözləyin...</span>';
+            const status = document.getElementById('import-status');
+            status.innerHTML = '<span style="color: var(--primary);">Fayl analiz edilir... Gözləyin...</span>';
 
-    try {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-        tempTeachers = [];
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                tempTeachers = [];
 
 
-        for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const content = await page.getTextContent();
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
 
-            // Map text items to {str, x, y}
-            const items = content.items.map(item => ({
-                str: item.str.trim().replace(/\s+/g, ' '),
-                x: item.transform[4],
-                y: item.transform[5]
-            })).filter(item => item.str.length > 0);
+                    // Map text items to {str, x, y}
+                    const items = content.items.map(item => ({
+                        str: item.str.trim().replace(/\s+/g, ' '),
+                        x: item.transform[4],
+                        y: item.transform[5]
+                    })).filter(item => item.str.length > 0);
 
-            if (items.length === 0) continue;
+                    if (items.length === 0) continue;
 
-            const sortedByYDesc = [...items].sort((a, b) => b.y - a.y);
-            let teacherName = "Naməlum";
+                    const sortedByYDesc = [...items].sort((a, b) => b.y - a.y);
+                    let teacherName = "Naməlum";
 
-            for (let item of sortedByYDesc) {
-                // Ignore known header keywords
-                if (item.str.length > 2 && !/IMSA|Maarif|Kampüsü|Ders Plan|Online|Günü|Oluşturuldu/i.test(item.str)) {
-                    // Found a candidate for name part. Now find ALL parts on this same line (Y-axis)
-                    const baseY = item.y;
-                    const nameParts = items.filter(i => Math.abs(i.y - baseY) < 10 && !/IMSA|Maarif|Kampüsü|Ders Plan|Online|Günü|Oluşturuldu/i.test(i.str));
+                    for (let item of sortedByYDesc) {
+                        // Ignore known header keywords
+                        if (item.str.length > 2 && !/IMSA|Maarif|Kampüsü|Ders Plan|Online|Günü|Oluşturuldu/i.test(item.str)) {
+                            // Found a candidate for name part. Now find ALL parts on this same line (Y-axis)
+                            const baseY = item.y;
+                            const nameParts = items.filter(i => Math.abs(i.y - baseY) < 10 && !/IMSA|Maarif|Kampüsü|Ders Plan|Online|Günü|Oluşturuldu/i.test(i.str));
 
-                    // Sort parts from left to right
-                    nameParts.sort((a, b) => a.x - b.x);
+                            // Sort parts from left to right
+                            nameParts.sort((a, b) => a.x - b.x);
 
-                    // Join them to form full Name Surname
-                    teacherName = nameParts.map(i => i.str).join(' ').trim();
-                    break;
+                            // Join them to form full Name Surname
+                            teacherName = nameParts.map(i => i.str).join(' ').trim();
+                            break;
+                        }
+                    }
+
+                    const dayMarkers = [];
+                    const hourMarkers = [];
+
+                    items.forEach(item => {
+                        const dayMatch = item.str.match(/^([1-5])\s*G/i);
+                        if (dayMatch) dayMarkers.push({ day: parseInt(dayMatch[1]), y: item.y });
+
+                        const hourMatch = item.str.match(/^([1-8])$/);
+                        if (hourMatch) {
+                            hourMarkers.push({ hour: parseInt(hourMatch[1]), x: item.x, y: item.y });
+                        }
+                    });
+
+                    // Sort hour markers by Y, take the topmost row (headers)
+                    if (hourMarkers.length > 0) {
+                        hourMarkers.sort((a, b) => b.y - a.y);
+                        const headerY = hourMarkers[0].y;
+                        // Keep unique hours close to headerY
+                        const finalHours = [];
+                        hourMarkers.forEach(h => {
+                            if (Math.abs(h.y - headerY) < 15) {
+                                if (!finalHours.find(u => u.hour === h.hour)) finalHours.push(h);
+                            }
+                        });
+                        hourMarkers.length = 0;
+                        hourMarkers.push(...finalHours);
+                    }
+
+                    dayMarkers.sort((a, b) => b.y - a.y);
+                    hourMarkers.sort((a, b) => a.x - b.x);
+
+                    if (dayMarkers.length === 0 || hourMarkers.length === 0) continue;
+
+                    // Calculate Approximate Column Width for Merged Cell Detection
+                    let avgColWidth = 60; // default backup
+                    if (hourMarkers.length > 1) {
+                        const totalDist = hourMarkers[hourMarkers.length - 1].x - hourMarkers[0].x;
+                        avgColWidth = totalDist / (hourMarkers.length - 1);
+                    }
+
+                    const nameParts = teacherName.split(' ');
+                    const teacher = {
+                        id: Date.now() + Math.random(),
+                        name: nameParts[0],
+                        surname: nameParts.slice(1).join(' '),
+                        branch: "Müəllim",
+                        schedule: {}
+                    };
+                    state.days.forEach(d => teacher.schedule[d] = [1, 2, 3, 4, 5, 6, 7, 8].map(h => ({ hour: h, isBusy: false })));
+
+                    items.forEach(item => {
+                        if (/Günü|IMSA|Maarif|Kampüsü|Ders Plan|Nahar Vaxt|nahar|Oluşturuldu|aSc|Online/i.test(item.str)) return;
+                        if (/^[1-8]$/.test(item.str)) return;
+                        if (item.str === teacherName) return;
+
+                        const dayObj = dayMarkers.find(dm => Math.abs(dm.y - item.y) < 25);
+                        if (!dayObj) return;
+
+                        const dayName = state.days[dayObj.day - 1];
+
+                        // Allow matching multiple hours (merged cells)
+                        // If a lesson spans 2 columns (merged), its center X will be exactly between the two column centers.
+                        // Distance to each column center will be 0.5 * Width.
+                        // We use 0.55 * Width to safely capture these, but avoid capturing neighbors (Distance = 1.0 * Width).
+                        const threshold = avgColWidth * 0.55;
+
+                        hourMarkers.forEach(hm => {
+                            const dist = Math.abs(hm.x - item.x);
+                            if (dist < threshold) {
+                                const slot = teacher.schedule[dayName].find(s => s.hour === hm.hour);
+                                if (slot) {
+                                    slot.isBusy = true;
+                                }
+                            }
+                        });
+                    });
+
+                    // Calculate total hours
+                    const totalHours = Object.values(teacher.schedule).reduce((acc, day) => acc + day.filter(h => h.isBusy).length, 0);
+                    teacher.totalHours = totalHours;
+                    teacher.hourly = false;
+
+                    tempTeachers.push(teacher);
                 }
+
+                if (tempTeachers.length > 0) {
+                    status.innerHTML = `<span style="color: #10b981; font-weight: 600;">${tempTeachers.length} müəllim cədvəli 100% dəqiqliklə oxundu!</span>`;
+                    const preview = document.getElementById('import-preview');
+                    const previewBody = document.getElementById('preview-body');
+                    const confirmBtn = document.getElementById('confirm-import');
+                    preview.style.display = 'block';
+                    confirmBtn.style.display = 'block';
+                    previewBody.innerHTML = tempTeachers.map(t => {
+                        return `<tr><td><strong>${t.name} ${t.surname}</strong></td><td>${t.totalHours} saat dərs</td></tr>`;
+                    }).join('');
+                } else {
+                    status.innerHTML = '<span style="color: var(--danger);">Cədvəl tanınmadı. PDF-in düzgün formatda olduğuna əmin olun.</span>';
+                }
+            } catch (error) {
+                console.error(error);
+                status.innerHTML = '<span style="color: var(--danger);">Xəta baş verdi: PDF faylı oxuna bilmədi.</span>';
+            }
+        };
+
+        window.confirmImport = () => {
+            if (confirm(`Siyahını sistemə əlavə etmək istəyirsiniz? (${tempTeachers.length} nəfər)`)) {
+                // Mövcud müəllimləri silmək və ya üzərinə əlavə etmək seçimi:
+                // İstifadəçi istəyindən asılı olaraq dəyişdirilə bilər. Hal-hazırda ÜZƏRİNƏ ƏLAVƏ edir.
+                state.teachers = [...state.teachers, ...tempTeachers];
+                saveState();
+                closeModal();
+                renderView();
+                alert('Yeni müəllimlər uğurla əlavə edildi!');
+            }
+        };
+
+
+        window.handleTeacherSelectChange = (select, day) => {
+            const teacherId = select.value;
+            const preview = document.getElementById('teacher-schedule-preview');
+            if (!teacherId) {
+                preview.innerHTML = '<p>Müəllim seçilməyib.</p>';
+                return;
+            }
+            const teacher = state.teachers.find(t => t.id == teacherId);
+            if (teacher && teacher.schedule && teacher.schedule[day]) {
+                let html = `<strong>${day} dərs cədvəli:</strong><div style="display: flex; gap: 4px; margin-top: 8px;">`;
+                teacher.schedule[day].forEach(p => {
+                    html += `<div style="flex: 1; text-align: center; padding: 4px; border-radius: 4px; background: ${p.isBusy ? '#fed7d7' : '#c6f6d5'}; color: ${p.isBusy ? '#c53030' : '#22543d'};">${p.hour}</div>`;
+                });
+                html += '</div>';
+                preview.innerHTML = html;
+            } else {
+                preview.innerHTML = '<p>Bu müəllim üçün cədvəl məlumatı yoxdur.</p>';
+            }
+        };
+
+
+        window.clearDutySchedule = () => {
+            if (!confirm('Bütün növbə cədvəli silinəcək. Əminsiniz?')) return;
+            state.assignments = {};
+            saveState();
+            renderView();
+        };
+
+
+        window.isSportsTeacher = (t) => {
+            if (!t) return false;
+            // Birinci ixtisasa baxırıq
+            if (t.branch && t.branch.toLowerCase().includes('idman')) return true;
+            // İkinci olaraq konkret ad/soyad yoxlaması (ixtisası hələ yenilənməyənlər üçün)
+            const sportsNames = [
+                { n: 'Emin', s: 'Sultanzadə' },
+                { n: 'Xəyalə', s: 'Qiyasova' },
+                { n: 'Şamil', s: 'Süleymanov' }
+            ];
+            return sportsNames.some(sn =>
+                t.name.includes(sn.n) && t.surname.includes(sn.s)
+            );
+        };
+
+        // Limit Hesablama Helper
+        window.getTeacherLimit = (t) => {
+            const h = t.totalHours !== undefined ? Number(t.totalHours) :
+                (t.schedule ? Object.values(t.schedule).reduce((acc, day) => acc + (Array.isArray(day) ? day.filter(s => s.isBusy).length : 0), 0) : 0);
+
+            if (h < 11) return 0; // Bu şərt hər şeydən öndə olmalıdır
+            if (t.hourly) return 1; // 11+ saatdırlarsa və saat hesablıdırlarsa 1 növbə
+            if (h < 20) return 1;
+            return 2;
+        };
+
+        window.getTeacherStayWindow = (t, day) => {
+            if (!t.schedule || !t.schedule[day]) return null;
+            const busyPeriods = t.schedule[day].filter(p => p.isBusy).map(p => p.hour);
+            if (busyPeriods.length === 0) return null;
+
+            // Əgər saat hesablı DEYİLSƏ, hər zaman 1-8 arası məktəbdə sayılır (əgər o gün dərsi varsa)
+            if (!t.hourly) {
+                return { start: 1, end: 8 };
             }
 
-            const dayMarkers = [];
-            const hourMarkers = [];
+            // Saat hesablıdırsa, yalnız dərsləri olan aralığı göstər
+            return { start: Math.min(...busyPeriods), end: Math.max(...busyPeriods) };
+        };
 
-            items.forEach(item => {
-                const dayMatch = item.str.match(/^([1-5])\s*G/i);
-                if (dayMatch) dayMarkers.push({ day: parseInt(dayMatch[1]), y: item.y });
+        window.autoAssignDuties = () => {
+            if (!confirm('Boş xanalar avtomatik paylanacaq. Davam etmək istəyirsiniz?')) return;
 
-                const hourMatch = item.str.match(/^([1-8])$/);
-                if (hourMatch) {
-                    hourMarkers.push({ hour: parseInt(hourMatch[1]), x: item.x, y: item.y });
+            // İdman zalını tanımaq üçün universal funksiya
+            const isGym = (loc) => {
+                if (!loc) return false;
+                if (loc.id == 10) return true; // ID ilə dəqiq yoxlama
+                const n = (loc.name || '').toLowerCase();
+                return n.includes('idman') || n.includes('İdman');
+            };
+
+            // 0. Qeyri-qanuni təyinatları təmizlə
+            let cleaned = 0;
+            Object.keys(state.assignments).forEach(key => {
+                const locId = key.split('-')[1];
+                const loc = state.locations.find(l => l.id == locId);
+                if (!loc) return;
+
+                const locIsGym = isGym(loc);
+
+                state.assignments[key] = state.assignments[key].filter(tid => {
+                    const t = state.teachers.find(te => te.id == tid);
+                    if (!t) return false;
+                    const isS = isSportsTeacher(t);
+
+                    // İdman zalıdırsa və müəllim idmançı deyilsə -> SİL
+                    if (locIsGym && !isS) { cleaned++; return false; }
+                    // İdman zalı deyilsə və müəllim idmançıdırsa -> SİL
+                    if (!locIsGym && isS) { cleaned++; return false; }
+
+                    return true;
+                });
+                if (state.assignments[key].length === 0) delete state.assignments[key];
+            });
+
+            // 1. Hazırlıq: Limitlər və Cari Saylar
+            const teacherLimits = {};
+            state.teachers.forEach(t => { teacherLimits[t.id] = getTeacherLimit(t); });
+
+            const currentCounts = {};
+            state.teachers.forEach(t => currentCounts[t.id] = 0);
+            Object.values(state.assignments).forEach(ids => {
+                if (Array.isArray(ids)) {
+                    ids.forEach(tid => {
+                        const nid = String(tid);
+                        if (currentCounts[nid] !== undefined) currentCounts[nid]++;
+                    });
                 }
             });
 
-            // Sort hour markers by Y, take the topmost row (headers)
-            if (hourMarkers.length > 0) {
-                hourMarkers.sort((a, b) => b.y - a.y);
-                const headerY = hourMarkers[0].y;
-                // Keep unique hours close to headerY
-                const finalHours = [];
-                hourMarkers.forEach(h => {
-                    if (Math.abs(h.y - headerY) < 15) {
-                        if (!finalHours.find(u => u.hour === h.hour)) finalHours.push(h);
-                    }
-                });
-                hourMarkers.length = 0;
-                hourMarkers.push(...finalHours);
-            }
+            let assignedCount = 0;
+            const days = state.days;
+            const locations = [...state.locations];
 
-            dayMarkers.sort((a, b) => b.y - a.y);
-            hourMarkers.sort((a, b) => a.x - b.x);
-
-            if (dayMarkers.length === 0 || hourMarkers.length === 0) continue;
-
-            // Calculate Approximate Column Width for Merged Cell Detection
-            let avgColWidth = 60; // default backup
-            if (hourMarkers.length > 1) {
-                const totalDist = hourMarkers[hourMarkers.length - 1].x - hourMarkers[0].x;
-                avgColWidth = totalDist / (hourMarkers.length - 1);
-            }
-
-            const nameParts = teacherName.split(' ');
-            const teacher = {
-                id: Date.now() + Math.random(),
-                name: nameParts[0],
-                surname: nameParts.slice(1).join(' '),
-                branch: "Müəllim",
-                schedule: {}
-            };
-            state.days.forEach(d => teacher.schedule[d] = [1, 2, 3, 4, 5, 6, 7, 8].map(h => ({ hour: h, isBusy: false })));
-
-            items.forEach(item => {
-                if (/Günü|IMSA|Maarif|Kampüsü|Ders Plan|Nahar Vaxt|nahar|Oluşturuldu|aSc|Online/i.test(item.str)) return;
-                if (/^[1-8]$/.test(item.str)) return;
-                if (item.str === teacherName) return;
-
-                const dayObj = dayMarkers.find(dm => Math.abs(dm.y - item.y) < 25);
-                if (!dayObj) return;
-
-                const dayName = state.days[dayObj.day - 1];
-
-                // Allow matching multiple hours (merged cells)
-                // If a lesson spans 2 columns (merged), its center X will be exactly between the two column centers.
-                // Distance to each column center will be 0.5 * Width.
-                // We use 0.55 * Width to safely capture these, but avoid capturing neighbors (Distance = 1.0 * Width).
-                const threshold = avgColWidth * 0.55;
-
-                hourMarkers.forEach(hm => {
-                    const dist = Math.abs(hm.x - item.x);
-                    if (dist < threshold) {
-                        const slot = teacher.schedule[dayName].find(s => s.hour === hm.hour);
-                        if (slot) {
-                            slot.isBusy = true;
+            const getCoverage = (day, locId) => {
+                const coverage = new Array(8).fill(false);
+                const ids = state.assignments[`${day}-${locId}`] || [];
+                ids.forEach(tid => {
+                    const t = state.teachers.find(te => te.id == tid);
+                    if (!t) return;
+                    const win = getTeacherStayWindow(t, day);
+                    if (win) {
+                        for (let i = win.start; i <= win.end; i++) {
+                            if (i >= 1 && i <= 8) coverage[i - 1] = true;
                         }
                     }
                 });
+                return coverage;
+            };
+
+            const isFullyCovered = (day, locId) => {
+                const loc = state.locations.find(l => l.id == locId);
+                const coverage = getCoverage(day, locId);
+                if (loc && (loc.name || '').toLowerCase().includes('yeməkxana')) {
+                    // Yeməkxana üçün yalnız 5 və 6-cı saatlar kifayətdir
+                    return !!(coverage[4] && coverage[5]);
+                }
+                // Digər yerlər üçün tam 8 saat
+                return coverage.every(c => c === true);
+            };
+
+            // -------------------------------------------------------------------------
+            // FAZA 1: İxtisaslaşmış İdman Zalı Paylanması (TAM 8 SAAT VƏ YALNIZ İDMANÇILAR)
+            // -------------------------------------------------------------------------
+            days.forEach(day => {
+                const gym = locations.find(l => isGym(l));
+                if (!gym) return;
+                const key = `${day}-${gym.id}`;
+                if (!state.assignments[key]) state.assignments[key] = [];
+
+                if (isFullyCovered(day, gym.id)) return;
+
+                // A) Saat hesablı idmançılar (limitlə)
+                const hourlySports = state.teachers.filter(t =>
+                    isSportsTeacher(t) && t.hourly && currentCounts[t.id] < teacherLimits[t.id]
+                );
+
+                hourlySports.forEach(t => {
+                    const win = getTeacherStayWindow(t, day);
+                    if (win && !state.assignments[key].includes(t.id)) {
+                        const curCov = getCoverage(day, gym.id);
+                        let addsValue = false;
+                        for (let i = win.start; i <= win.end; i++) if (i >= 1 && i <= 8 && !curCov[i - 1]) addsValue = true;
+
+                        if (addsValue && !isFullyCovered(day, gym.id)) {
+                            state.assignments[key].push(t.id);
+                            currentCounts[t.id]++;
+                            assignedCount++;
+                        }
+                    }
+                });
+
+                // B) Tam Ştat idmançılar - Dolana qədər limitsiz
+                const fullSports = state.teachers.filter(t => isSportsTeacher(t) && !t.hourly);
+                let attempts = 0;
+                while (!isFullyCovered(day, gym.id) && attempts < 10) {
+                    attempts++;
+                    const curCov = getCoverage(day, gym.id);
+                    const candidates = fullSports.filter(t => !state.assignments[key].includes(t.id))
+                        .sort((a, b) => currentCounts[a.id] - currentCounts[b.id]);
+
+                    if (candidates.length > 0) {
+                        state.assignments[key].push(candidates[0].id);
+                        currentCounts[candidates[0].id]++;
+                        assignedCount++;
+                    } else break;
+                }
             });
 
-            // Calculate total hours
-            const totalHours = Object.values(teacher.schedule).reduce((acc, day) => acc + day.filter(h => h.isBusy).length, 0);
-            teacher.totalHours = totalHours;
-            teacher.hourly = false;
+            // -------------------------------------------------------------------------
+            // FAZA 2: "Ən azı 1 dəfə növbətçi olmalı" qaydası
+            // -------------------------------------------------------------------------
+            const mandateTeachers = state.teachers.filter(t =>
+                !isSportsTeacher(t) && currentCounts[t.id] === 0 && teacherLimits[t.id] > 0
+            ).sort(() => Math.random() - 0.5);
 
-            tempTeachers.push(teacher);
-        }
+            mandateTeachers.forEach(t => {
+                for (let d of days) {
+                    const win = getTeacherStayWindow(t, d);
+                    if (!win) continue;
 
-        if (tempTeachers.length > 0) {
-            status.innerHTML = `<span style="color: #10b981; font-weight: 600;">${tempTeachers.length} müəllim cədvəli 100% dəqiqliklə oxundu!</span>`;
-            const preview = document.getElementById('import-preview');
-            const previewBody = document.getElementById('preview-body');
-            const confirmBtn = document.getElementById('confirm-import');
-            preview.style.display = 'block';
-            confirmBtn.style.display = 'block';
-            previewBody.innerHTML = tempTeachers.map(t => {
-                return `<tr><td><strong>${t.name} ${t.surname}</strong></td><td>${t.totalHours} saat dərs</td></tr>`;
-            }).join('');
-        } else {
-            status.innerHTML = '<span style="color: var(--danger);">Cədvəl tanınmadı. PDF-in düzgün formatda olduğuna əmin olun.</span>';
-        }
-    } catch (error) {
-        console.error(error);
-        status.innerHTML = '<span style="color: var(--danger);">Xəta baş verdi: PDF faylı oxuna bilmədi.</span>';
-    }
-};
+                    for (let loc of locations) {
+                        if (isGym(loc)) continue;
+                        if (isFullyCovered(d, loc.id)) continue;
 
-window.confirmImport = () => {
-    if (confirm(`Siyahını sistemə əlavə etmək istəyirsiniz? (${tempTeachers.length} nəfər)`)) {
-        // Mövcud müəllimləri silmək və ya üzərinə əlavə etmək seçimi:
-        // İstifadəçi istəyindən asılı olaraq dəyişdirilə bilər. Hal-hazırda ÜZƏRİNƏ ƏLAVƏ edir.
-        state.teachers = [...state.teachers, ...tempTeachers];
-        saveState();
-        closeModal();
-        renderView();
-        alert('Yeni müəllimlər uğurla əlavə edildi!');
-    }
-};
+                        const key = `${d}-${loc.id}`;
+                        if (!state.assignments[key]) state.assignments[key] = [];
+                        if (state.assignments[key].includes(t.id)) continue;
 
-window.handleTeacherSelectChange = (select, day) => {
-    const teacherId = select.value;
-    const preview = document.getElementById('teacher-schedule-preview');
-    if (!teacherId) {
-        preview.innerHTML = '<p>Müəllim seçilməyib.</p>';
-        return;
-    }
-    const teacher = state.teachers.find(t => t.id == teacherId);
-    if (teacher && teacher.schedule && teacher.schedule[day]) {
-        let html = `<strong>${day} dərs cədvəli:</strong><div style="display: flex; gap: 4px; margin-top: 8px;">`;
-        teacher.schedule[day].forEach(p => {
-            html += `<div style="flex: 1; text-align: center; padding: 4px; border-radius: 4px; background: ${p.isBusy ? '#fed7d7' : '#c6f6d5'}; color: ${p.isBusy ? '#c53030' : '#22543d'};">${p.hour}</div>`;
-        });
-        html += '</div>';
-        preview.innerHTML = html;
-    } else {
-        preview.innerHTML = '<p>Bu müəllim üçün cədvəl məlumatı yoxdur.</p>';
-    }
-};
+                        const curCov = getCoverage(d, loc.id);
+                        let addsValue = false;
+                        for (let i = win.start; i <= win.end; i++) {
+                            if (i >= 1 && i <= 8 && !curCov[i - 1]) {
+                                if ((loc.name || '').toLowerCase().includes('yeməkxana')) {
+                                    if (i === 5 || i === 6) addsValue = true;
+                                } else addsValue = true;
+                            }
+                        }
+
+                        if (addsValue && currentCounts[t.id] < teacherLimits[t.id]) {
+                            state.assignments[key].push(t.id);
+                            currentCounts[t.id]++;
+                            assignedCount++;
+                            return;
+                        }
+                    }
+                }
+            });
+
+            // -------------------------------------------------------------------------
+            // FAZA 3: Ümumi doldurma (Qalan boşluqlar)
+            // -------------------------------------------------------------------------
+            days.forEach(day => {
+                locations.forEach(loc => {
+                    if (isGym(loc)) return; // İdman zalına toxunma!
+                    const key = `${day}-${loc.id}`;
+                    if (!state.assignments[key]) state.assignments[key] = [];
+
+                    let attempts = 0;
+                    while (!isFullyCovered(day, loc.id) && attempts < 20) {
+                        attempts++;
+                        const curCov = getCoverage(day, loc.id);
+
+                        const candidates = state.teachers.filter(t => {
+                            if (isSportsTeacher(t)) return false;
+                            if (currentCounts[t.id] >= teacherLimits[t.id]) return false;
+                            if (state.assignments[key].includes(t.id)) return false;
+
+                            const win = getTeacherStayWindow(t, day);
+                            if (!win) return false;
+
+                            for (let i = win.start; i <= win.end; i++) {
+                                if (i >= 1 && i <= 8 && !curCov[i - 1]) {
+                                    if ((loc.name || '').toLowerCase().includes('yeməkxana')) {
+                                        if (i === 5 || i === 6) return true;
+                                    } else return true;
+                                }
+                            }
+                            return false;
+                        }).sort((a, b) => {
+                            if (a.hourly !== b.hourly) return a.hourly ? -1 : 1;
+                            return currentCounts[a.id] - currentCounts[b.id];
+                        });
+
+                        if (candidates.length > 0) {
+                            state.assignments[key].push(candidates[0].id);
+                            currentCounts[candidates[0].id]++;
+                            assignedCount++;
+                        } else break;
+                    }
+                });
+            });
+
+            saveState();
+            renderView();
+            alert(`${assignedCount} yeni növbə təyin edildi!`);
+        };
 
 
-window.showTeacherSchedule = (teacherId) => {
-    const teacher = state.teachers.find(t => t.id == teacherId);
-    if (!teacher || !teacher.schedule) {
-        alert('Bu müəllim üçün cədvəl tapılmadı.');
-        return;
-    }
 
-    const lessonTimes = [
-        "08:40 - 09:20", "09:30 - 10:10", "10:20 - 11:00", "11:10 - 11:50",
-        "12:40 - 13:20", "13:30 - 14:10", "14:20 - 15:00", "15:10 - 15:50"
-    ];
-
-    const periods = [1, 2, 3, 4, 5, 6, 7, 8];
-
-    let scheduleHtml = `
-        <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
-                <thead>
-                    <tr style="background-color: #00525d; color: #ffffff !important;">
-                        <th style="padding: 4px; border: 1px solid rgba(255,255,255,0.3); vertical-align: middle; width: 60px;">Gün</th>
-                        ${periods.map((h) => `
-                            <th style="padding: 4px; border: 1px solid rgba(255,255,255,0.3); text-align: center; color: #ffffff !important;">
-                                <div style="font-size: 1.1em; font-weight: bold; line-height: 1.2;">${h}</div>
-                            </th>
+        window.openBulkHourlyModal = () => {
+            showModal('Saat Hesablı Müəllimləri Seçin', `
+                <div style="max-height: 400px; overflow-y: auto; padding: 0.5rem;">
+                    <div style="margin-bottom: 1rem; position: sticky; top: 0; background: var(--bg-modal); padding: 5px; z-index: 10;">
+                        <input type="text" placeholder="Müəllim axtar..." class="form-control" oninput="filterBulkList(this.value)">
+                    </div>
+                    <div id="bulk-hourly-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+                        ${state.teachers.sort((a, b) => a.name.localeCompare(b.name)).map(t => `
+                            <label style="display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">
+                                <input type="checkbox" ${t.hourly ? 'checked' : ''} onchange="toggleHourly(${t.id}, this.checked)">
+                                <span>${t.name} ${t.surname}</span>
+                            </label>
                         `).join('')}
-                        <th style="padding: 4px; border: 1px solid rgba(255,255,255,0.3); vertical-align: middle; width: 50px;">Cəmi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${state.days.map(day => {
-        const dailyBusyCount = teacher.schedule[day] ? teacher.schedule[day].filter(s => s.isBusy).length : 0;
-        return `
-                        <tr>
-                            <td style="padding: 4px; border: 1px solid var(--border-light); font-weight: 600; background: var(--bg-light); white-space: nowrap;">${day}</td>
-                            ${periods.map(h => {
-            const p = teacher.schedule[day] ? teacher.schedule[day].find(slot => slot.hour === h) || { isBusy: false } : { isBusy: false };
-            return `
-                                    <td style="padding: 4px; border: 1px solid var(--border-light); text-align: center; background: ${p.isBusy ? '#fed7d7' : '#c6f6d5'}; color: ${p.isBusy ? '#c53030' : '#22543d'}; font-weight: 600;">
-                                        ${p.isBusy ? '●' : '○'}
-                                    </td>
-                                `;
-        }).join('')}
-                            <td style="padding: 4px; border: 1px solid var(--border-light); text-align: center; font-weight: 700;">${dailyBusyCount}</td>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="closeModal(); renderView();" style="width: 100%; margin-top: 1.5rem;">Tamam</button>
+            `);
+        };
+
+        window.filterBulkList = (query) => {
+            const list = document.getElementById('bulk-hourly-list');
+            const items = list.getElementsByTagName('label');
+            const q = query.toLowerCase();
+            for (let item of items) {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(q) ? 'flex' : 'none';
+            }
+        };
+
+        window.toggleHourly = (id, checked) => {
+            const index = state.teachers.findIndex(t => t.id == id);
+            if (index !== -1) {
+                state.teachers[index].hourly = checked;
+                saveState();
+            }
+        };
+
+        window.openDutyReportModal = () => {
+            // Calculate limits and counts again
+            const teacherStats = state.teachers.map(t => {
+                const limit = getTeacherLimit(t);
+
+                const assignedCount = Object.values(state.assignments).reduce((acc, ids) => {
+                    return acc + (ids.some(tid => String(tid) == String(t.id)) ? 1 : 0);
+                }, 0);
+
+                // Explanation why not assigned more
+                let reason = "";
+                if (assignedCount >= limit) {
+                    reason = limit === 0 ? "Dərs saatı 11-dən azdır." : "Limitə çatdı.";
+                } else {
+                    reason = "Dərsinin az olduğu gün tapılmadı və ya digər məhdudiyyət.";
+                }
+
+                return { ...t, limit, assignedCount, reason };
+            });
+
+            showModal('Növbə Paylanma Hesabatı', `
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead style="position: sticky; top: 0; background: var(--bg-card); z-index: 10;">
+                            <tr style="border-bottom: 2px solid var(--border);">
+                                <th align="left" style="padding: 10px;">Müəllim</th>
+                                <th align="center" style="padding: 10px;">Dərs (Saat)</th>
+                                <th align="center" style="padding: 10px;">Limit</th>
+                                <th align="center" style="padding: 10px;">Yazıldı</th>
+                                <th align="left" style="padding: 10px;">Qeyd</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${teacherStats
+                    .sort((a, b) => a.name.localeCompare(b.name) || a.surname.localeCompare(b.surname))
+                    .map(s => `
+                                <tr style="border-bottom: 1px solid var(--border);">
+                                    <td style="padding: 10px;"><strong>${s.name} ${s.surname}</strong> ${s.hourly ? '<small>(Saat hes.)</small>' : ''}</td>
+                                    <td align="center">${s.totalHours || 0}</td>
+                                    <td align="center">${s.limit}</td>
+                                    <td align="center" style="color: ${s.assignedCount >= s.limit && s.limit > 0 ? '#10b981' : 'inherit'}; font-weight: bold;">${s.assignedCount}</td>
+                                    <td style="padding: 10px; font-size: 0.75rem; color: var(--text-muted);">${s.reason}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `, true);
+        };
+
+        window.showTeacherSchedule = (teacherId) => {
+            const teacher = state.teachers.find(t => t.id == teacherId);
+            if (!teacher || !teacher.schedule) {
+                alert('Bu müəllim üçün cədvəl tapılmadı.');
+                return;
+            }
+
+            const periods = [1, 2, 3, 4, 5, 6, 7, 8];
+
+            let scheduleHtml = `
+            <div style="overflow-x: auto;">
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem; text-align: center;">* Dərs saatlarını dəyişmək üçün xanalara klikləyin.</p>
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                    <thead>
+                        <tr style="background-color: #00525d; color: #ffffff !important;">
+                            <th style="padding: 4px; border: 1px solid rgba(255,255,255,0.3); vertical-align: middle; width: 60px;">Gün</th>
+                            ${periods.map((h) => `
+                                <th style="padding: 4px; border: 1px solid rgba(255,255,255,0.3); text-align: center; color: #ffffff !important;">
+                                    <div style="font-size: 1.1em; font-weight: bold; line-height: 1.2;">${h}</div>
+                                </th>
+                            `).join('')}
+                            <th style="padding: 4px; border: 1px solid rgba(255,255,255,0.3); vertical-align: middle; width: 50px;">Cəmi</th>
                         </tr>
-                    `}).join('')}
-                </tbody>
-            </table>
-        </div>
-        <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: center; font-size: 0.8rem;">
-            <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 14px; height: 14px; background: #fed7d7; border-radius: 4px;"></span> Dərsi var</span>
-            <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 14px; height: 14px; background: #c6f6d5; border-radius: 4px;"></span> Boşdur</span>
-        </div>
-    `;
+                    </thead>
+                    <tbody>
+                        ${state.days.map(day => {
+                const dailyBusyCount = teacher.schedule[day] ? teacher.schedule[day].filter(s => s.isBusy).length : 0;
+                return `
+                            <tr>
+                                <td style="padding: 4px; border: 1px solid var(--border-light); font-weight: 600; background: var(--bg-light); white-space: nowrap;">${day}</td>
+                                ${periods.map(h => {
+                    const p = teacher.schedule[day] ? teacher.schedule[day].find(slot => slot.hour === h) || { isBusy: false } : { isBusy: false };
+                    return `
+                                        <td 
+                                            onclick="toggleTeacherHour(${teacher.id}, '${day}', ${h})"
+                                            style="padding: 8px 4px; border: 1px solid var(--border-light); text-align: center; background: ${p.isBusy ? '#fed7d7' : '#c6f6d5'}; color: ${p.isBusy ? '#c53030' : '#22543d'}; font-weight: 600; cursor: pointer; transition: all 0.2s;"
+                                            title="${h}-ci saat ${p.isBusy ? 'Dərsi var' : 'Boşdur'}"
+                                        >
+                                            ${p.isBusy ? '●' : '○'}
+                                        </td>
+                                    `;
+                }).join('')}
+                                <td align="center" style="padding: 4px; border: 1px solid var(--border-light); font-weight: 700;">${dailyBusyCount}</td>
+                            </tr>
+                        `}).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 1rem; display: flex; gap: 1rem; justify-content: center; font-size: 0.8rem;">
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 14px; height: 14px; background: #fed7d7; border-radius: 4px; border: 1px solid #feb2b2;"></span> Dərsi var</span>
+                <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 14px; height: 14px; background: #c6f6d5; border-radius: 4px; border: 1px solid #9ae6b4;"></span> Boşdur</span>
+            </div>
+        `;
 
-    const totalHours = teacher.totalHours ? teacher.totalHours : (teacher.schedule ? Object.values(teacher.schedule).reduce((acc, d) => acc + d.filter(s => s.isBusy).length, 0) : 0);
-    const hourlyBadge = teacher.hourly ? '<span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">Saat Hesablı</span>' : '';
+            const totalHours = teacher.totalHours !== undefined ? teacher.totalHours : (teacher.schedule ? Object.values(teacher.schedule).reduce((acc, d) => acc + d.filter(s => s.isBusy).length, 0) : 0);
+            const hourlyBadge = teacher.hourly ? '<span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">Saat Hesablı</span>' : '';
 
-    showModal(
-        `<div style="display:flex; align-items:center;">
-            ${teacher.name} ${teacher.surname} 
-            ${hourlyBadge}
-            <span style="margin-left: auto; font-size: 0.9em; font-weight: normal; color: var(--text-muted);">Həftəlik Cəmi: <strong>${totalHours}</strong> saat</span>
-         </div>`,
-        scheduleHtml
-    );
-};
+            showModal(
+                `<div style="display:flex; align-items:center; width: 100%;">
+                <span style="white-space: nowrap;">${teacher.name} ${teacher.surname}</span>
+                ${hourlyBadge}
+                <span id="modal-total-hours" style="margin-left: auto; font-size: 0.9em; font-weight: normal; color: var(--text-muted);">Həftəlik Cəmi: <strong>${totalHours}</strong> saat</span>
+             </div>`,
+                scheduleHtml,
+                true
+            );
+        };
 
-document.querySelector('.close-modal').onclick = closeModal;
-window.onclick = (event) => {
-    if (event.target == document.getElementById('modal-container')) closeModal();
-};
+        window.toggleTeacherHour = (teacherId, day, hour) => {
+            const teacher = state.teachers.find(t => t.id == teacherId);
+            if (!teacher || !teacher.schedule || !teacher.schedule[day]) return;
 
-</script>
+            const slot = teacher.schedule[day].find(s => s.hour == hour);
+            if (slot) {
+                slot.isBusy = !slot.isBusy;
+
+                // Ümumi saatı yenidən hesabla
+                teacher.totalHours = Object.values(teacher.schedule).reduce((acc, d) => acc + d.filter(s => s.isBusy).length, 0);
+
+                saveState();
+                // Modalı yenidən render et ki, dəyişiklik görünsün
+                showTeacherSchedule(teacherId);
+                // Arxa fondakı cədvəli də yenilə (əgər açıqdırsa)
+                if (state.view === 'teachers') renderTeachers(document.getElementById('content-area'));
+                else if (state.view === 'schedule') renderSchedule(document.getElementById('content-area'));
+            }
+        };
+
+        document.querySelector('.close-modal').onclick = closeModal;
+        window.onclick = (event) => {
+            if (event.target == document.getElementById('modal-container')) closeModal();
+        };
+
+        window.exportSchedulePDF = () => {
+            const element = document.createElement('div');
+            element.style.padding = '40px';
+            element.style.backgroundColor = '#ffffff';
+            element.style.color = '#1e293b';
+            element.style.fontFamily = "'Poppins', sans-serif";
+
+            const logURL = 'https://i.imgur.com/a3FuVV8.png';
+
+            let tableRows = state.locations.map(loc => {
+                let dayCells = state.days.map(day => {
+                    const ids = state.assignments[`${day}-${loc.id}`] || [];
+                    const names = ids.map(id => {
+                        const t = state.teachers.find(te => te.id == id);
+                        return t ? `${t.name} ${t.surname}` : '';
+                    }).filter(Boolean);
+
+                    return `
+                        <td style="border: 1px solid #e2e8f0; padding: 12px; text-align: center; vertical-align: middle;">
+                            ${names.length > 0 ? names.map(n => `<div style="font-weight: 600; font-size: 10px; margin-bottom: 2px;">${n}</div>`).join('') : '<span style="color: #cbd5e1; font-style: italic; font-size: 10px;">-</span>'}
+                        </td>
+                    `;
+                }).join('');
+
+                return `
+                    <tr>
+                        <td style="border: 1px solid #e2e8f0; padding: 12px; background-color: #f8fafc; font-weight: 700; font-size: 11px; color: #00525d; width: 140px;">${loc.name}</td>
+                        ${dayCells}
+                    </tr>
+                `;
+            }).join('');
+
+            element.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 30px; border-bottom: 4px solid #00525d; padding-bottom: 20px;">
+                    <img src="${logURL}" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid #00525d;" onerror="this.src='https://placehold.co/100x100?text=Logo'">
+                    <div>
+                        <h1 style="margin: 0; color: #00525d; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;">Azərbaycan Beynəlxalq Maarif</h1>
+                        <h2 style="margin: 5px 0 0 0; color: #007f8c; font-size: 18px; font-weight: 600;">Növbətçi Müəllim Cədvəli</h2>
+                        <div style="margin-top: 8px; display: flex; gap: 20px; font-size: 12px; color: #64748b;">
+                            <span><strong>Həftəlik Plan</strong></span>
+                            <span>Tarix: ${new Date().toLocaleDateString('az-AZ')}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                    <thead>
+                        <tr style="background-color: #00525d; color: #ffffff;">
+                            <th style="border: 1px solid #00525d; padding: 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Növbə Yerləri</th>
+                            ${state.days.map(day => `<th style="border: 1px solid #00525d; padding: 14px; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">${day}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div style="font-size: 10px; color: #94a3b8;">
+                        * Sənəd avtomatik olaraq Maarif Növbə Sistemi tərəfindən yaradılmışdır.<br>
+                        * Cədvələ əsasən növbətçilik vaxtlarına riayət edilməsi xahiş olunur.
+                    </div>
+                    <div style="text-align: center; border-top: 1px solid #cbd5e1; padding-top: 10px; width: 200px;">
+                        <div style="font-size: 12px; font-weight: 600;">Məktəb Rəhbərliyi</div>
+                        <div style="font-size: 10px; color: #64748b; margin-top: 4px;">İmza və Möhür</div>
+                    </div>
+                </div>
+            `;
+
+            const opt = {
+                margin: 10,
+                filename: `novbe_cedveli_${new Date().toISOString().slice(0, 10)}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+
+            // Göstər ki, yüklənir
+            const btn = document.activeElement;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="loading-spinner"></span> Hazırlanır...';
+            btn.disabled = true;
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }).catch(err => {
+                console.error('PDF Error:', err);
+                alert('PDF yaradılarkən xəta baş verdi!');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        };
+
+    </script>
 </body>
 
 </html>
