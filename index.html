@@ -580,17 +580,54 @@
         .modal-overlay:not(.hidden) {
             opacity: 1;
             pointer-events: auto;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                background: rgba(0, 0, 0, 0);
+            }
+
+            to {
+                background: rgba(0, 0, 0, 0.5);
+            }
         }
 
         .modal-content {
             width: 100%;
             max-width: 520px;
-            padding: 2.5rem;
+            max-height: 90vh;
+            padding: 2rem;
             transform: translateY(20px) scale(0.95);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background: var(--glass-bg);
             border-radius: var(--radius-lg);
             border: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: var(--shadow-3xl);
+        }
+
+        .modal-body {
+            overflow-y: auto;
+            padding-right: 8px;
+            flex: 1;
+        }
+
+        /* Custom Scrollbar for Modal Body */
+        .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+            opacity: 0.5;
         }
 
         .modal-content.wide {
@@ -737,15 +774,42 @@
 
         /* ===== SHORTAGE WARNING ===== */
         .shortage-warning {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border: 2px solid #f59e0b;
-            border-radius: var(--radius);
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.5rem;
+            background: rgba(254, 215, 215, 0.4);
+            border: 1px solid #feb2b2;
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
             display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            animation: pulse-warning 2s ease-in-out infinite;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .shortage-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            max-height: 2.8rem;
+            /* Roughly 2 rows */
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding: 2px 0;
+        }
+
+        .shortage-list.expanded {
+            max-height: 1000px;
+        }
+
+        .shortage-item {
+            padding: 2px 10px;
+            background: white;
+            border: 1px solid #feb2b2;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: #c53030;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-block;
+            line-height: 1.2;
         }
 
         @keyframes pulse-warning {
@@ -1643,6 +1707,106 @@
             days: ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə']
         };
 
+        // ===== GLOBAL HELPERS =====
+        window.isSportsTeacher = (t) => {
+            if (!t) return false;
+            // Robust check for "İdman" or "Idman" in the branch field
+            return !!(t.branch && /[iİ]dman/i.test(t.branch));
+        };
+
+        window.isGym = (loc) => {
+            if (!loc) return false;
+            // Check by ID (10 is the default) or by name (contains "idman" or "gym")
+            if (loc.id == 10 || loc.id == '10') return true;
+            const n = loc.name || '';
+            return /[iİ]dman|gym/i.test(n);
+        };
+
+        window.getTeacherDutyDistribution = (day, locId) => {
+            const ids = state.assignments[`${day}-${locId}`] || [];
+            if (ids.length === 0) return {};
+
+            const loc = state.locations.find(l => l.id == locId);
+            const isYem = loc && loc.name.toLowerCase().includes('yeməkxana');
+            const hours = isYem ? [5, 6] : [1, 2, 3, 4, 5, 6, 7, 8];
+
+            const distribution = {};
+            ids.forEach(id => distribution[id] = []);
+
+            hours.forEach(h => {
+                const candidates = ids.filter(tid => {
+                    const t = state.teachers.find(te => te.id == tid);
+                    if (!t) return false;
+                    const sched = t.schedule && t.schedule[day] ? t.schedule[day].find(s => s.hour == h) : null;
+                    if (sched && sched.isBusy) return false;
+                    const win = getTeacherStayWindow(t, day);
+                    return win && h >= win.start && h <= win.end;
+                });
+
+                if (candidates.length > 0) {
+                    // Split hours fairly: pick the one with fewest hours in this cell
+                    candidates.sort((a, b) => {
+                        if (distribution[a].length !== distribution[b].length)
+                            return distribution[a].length - distribution[b].length;
+                        return ids.indexOf(a) - ids.indexOf(b);
+                    });
+                    distribution[candidates[0]].push(h);
+                }
+            });
+            return distribution;
+        };
+
+        window.getCoverage = (day, locId) => {
+            const coverage = new Array(8).fill(false);
+            const ids = state.assignments[`${day}-${locId}`] || [];
+            ids.forEach(tid => {
+                const t = state.teachers.find(te => te.id == tid);
+                if (!t) return;
+
+                // Müəllimin bu saatda həqiqətən boş olduğunu yoxlayırıq
+                for (let h = 1; h <= 8; h++) {
+                    const sched = t.schedule && t.schedule[day] ? t.schedule[day].find(s => s.hour == h) : null;
+                    if (sched && !sched.isBusy) {
+                        const win = getTeacherStayWindow(t, day);
+                        if (win && h >= win.start && h <= win.end) {
+                            coverage[h - 1] = true;
+                        }
+                    }
+                }
+            });
+            return coverage;
+        };
+
+        window.formatHourList = (list) => {
+            if (!list || list.length === 0) return '';
+            const sorted = [...list].sort((a, b) => a - b);
+            const ranges = [];
+            let start = sorted[0];
+            let prev = sorted[0];
+
+            for (let i = 1; i <= sorted.length; i++) {
+                if (i < sorted.length && sorted[i] === prev + 1) {
+                    prev = sorted[i];
+                } else {
+                    ranges.push(start === prev ? `${start}` : `${start}-${prev}`);
+                    if (i < sorted.length) {
+                        start = sorted[i];
+                        prev = sorted[i];
+                    }
+                }
+            }
+            return `(${ranges.join(', ')})`;
+        };
+
+        window.isFullyCovered = (day, locId) => {
+            const loc = state.locations.find(l => l.id == locId);
+            const coverage = getCoverage(day, locId);
+            if (loc && (loc.name || '').toLowerCase().includes('yeməkxana')) {
+                return !!(coverage[4] && coverage[5]);
+            }
+            return coverage.every(c => c === true);
+        };
+
         // ===== DATA LOADING Məntiqi =====
         async function loadCloudData() {
             updateSyncStatus('pending', 'Verilənlər yüklənir...');
@@ -1694,7 +1858,6 @@
         document.addEventListener('DOMContentLoaded', async () => {
             await loadCloudData(); // Verilənləri yüklə (Cloud prioritized)
 
-            patchSportsTeachers();
             setupNavigation();
             updateDateTime();
             startClock();
@@ -1719,25 +1882,6 @@
             }
         });
 
-        // Köhnə data-lı istifadəçilər üçün idman müəllimlərini "İdman" ixtisasına məcburi keçir
-        function patchSportsTeachers() {
-            const sportsSurnames = ['Sultanzadə', 'Qiyasova', 'Süleymanov'];
-            let changed = false;
-            state.teachers.forEach(t => {
-                if (t.surname && sportsSurnames.some(s => t.surname.includes(s))) {
-                    if (t.branch !== 'İdman') {
-                        t.branch = 'İdman';
-                        changed = true;
-                    }
-                    // Emin və Xəyaləni saat hesablıya keçir (əgər deyilsə)
-                    if ((t.surname.includes('Sultanzadə') || t.surname.includes('Qiyasova')) && !t.hourly) {
-                        t.hourly = true;
-                        changed = true;
-                    }
-                }
-            });
-            if (changed) saveState();
-        }
 
         async function saveState() {
             localStorage.setItem('teachers', JSON.stringify(state.teachers));
@@ -1794,14 +1938,54 @@
 
         // Naviqasiya
         function setupNavigation() {
+            // View switching logic
             document.querySelectorAll('.nav-item').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     state.view = btn.dataset.view;
                     renderView();
+
+                    // On mobile, close sidebar after clicking nav
+                    if (window.innerWidth <= 768) {
+                        const sidebar = document.getElementById('sidebar');
+                        const overlay = document.getElementById('sidebar-overlay');
+                        if (sidebar) sidebar.classList.remove('mobile-open');
+                        if (overlay) overlay.classList.remove('active');
+                    }
                 });
             });
+
+            // Desktop Collapse Toggle
+            const collapseToggle = document.getElementById('collapse-toggle');
+            const sidebar = document.getElementById('sidebar');
+            if (collapseToggle && sidebar) {
+                collapseToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
+                });
+
+                // Load preference
+                if (localStorage.getItem('sidebar-collapsed') === 'true') {
+                    sidebar.classList.add('collapsed');
+                }
+            }
+
+            // Mobile Hamburger Toggle
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            if (sidebarToggle && sidebar && sidebarOverlay) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.add('mobile-open');
+                    sidebarOverlay.classList.add('active');
+                });
+
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.remove('mobile-open');
+                    sidebarOverlay.classList.remove('active');
+                });
+            }
         }
 
         function setupTheme() {
@@ -1920,8 +2104,9 @@
                 const teacherIds = state.assignments[`${currentDay}-${loc.id}`] || [];
                 const assigned = teacherIds.map(id => state.teachers.find(t => t.id == id)).filter(Boolean);
                 return {
+                    id: loc.id,
                     loc: loc.name,
-                    teachers: assigned.map(t => `${t.name} ${t.surname}`),
+                    assigned: assigned,
                     branches: assigned.map(t => t.branch).join(', ')
                 };
             });
@@ -1938,15 +2123,25 @@
                         </thead>
                         <tbody>
                             ${todayAssignments.map(a => `
-                                <tr>
+                                 <tr>
                                     <td>
                                         <strong>${a.loc}</strong>
                                         ${a.loc.includes('Yeməkxana') && a.loc.includes('1') ? '<br><small style="color: var(--text-muted);">11:50 - 12:40</small>' : ''}
                                         ${a.loc.includes('Yeməkxana') && a.loc.includes('2') ? '<br><small style="color: var(--text-muted);">12:40 - 13:30</small>' : ''}
                                     </td>
                                     <td>
-                                        ${a.teachers.length > 0
-                    ? a.teachers.map(t => `<div class="badge btn-primary" style="margin-bottom: 4px; display: block;">${t}</div>`).join('')
+                                        ${a.assigned.length > 0
+                    ? a.assigned.map(t => {
+                        const hasLessons = t.schedule && t.schedule[currentDay] && t.schedule[currentDay].some(s => s.isBusy);
+                        let hStr = "";
+                        if (!t.hourly) {
+                            hStr = `(1-8)${hasLessons ? ' <span style="color:#e53e3e;font-weight:700;">(Dərsi var)</span>' : ''}`;
+                        } else {
+                            const win = getTeacherStayWindow(t, currentDay);
+                            hStr = win ? `(${win.start}-${win.end})${hasLessons ? ' <span style="color:#e53e3e;font-weight:700;">(Dərsi var)</span>' : ''}` : '<span style="color:#e53e3e;">(Dərs yoxdur)</span>';
+                        }
+                        return `<div class="badge btn-primary" style="margin-bottom: 4px; display: block;">${t.name} ${t.surname} <small>${hStr}</small></div>`;
+                    }).join('')
                     : `<span style="color: var(--text-muted); font-style: italic;">Təyin edilməyib</span>`
                 }
                                     </td>
@@ -1955,6 +2150,34 @@
                             `).join('')}
                         </tbody>
                     </table>
+                </div>
+            `;
+        }
+
+        function renderShortageWarning() {
+            const shortages = getShortages();
+            if (shortages.length === 0) return '';
+
+            return `
+                <div class="shortage-warning">
+                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="font-size: 1.1rem;">⚠️</span>
+                            <h4 style="margin:0; font-size: 0.85rem; font-weight: 700; color: #c53030;">Çatışmazlıq!</h4>
+                            <span style="font-size: 0.75rem; color: #e53e3e; opacity: 0.8;">(${shortages.length} nöqtə)</span>
+                        </div>
+                        <button class="btn" onclick="const list = document.getElementById('shortage-list-el'); list.classList.toggle('expanded'); this.textContent = list.classList.contains('expanded') ? 'Bağla' : 'Hamısını göstər'" 
+                                style="padding: 2px 12px; font-size: 0.65rem; background: #c53030; color: #fff; border-radius: 4px; height: 24px; cursor: pointer; border: none; font-weight: 600;">
+                            Hamısını göstər
+                        </button>
+                    </div>
+                    <div class="shortage-list" id="shortage-list-el">
+                        ${shortages.map(s => `
+                            <span class="shortage-item" onclick="openAssignModal('${s.day}', ${s.locId})">
+                                ${s.day.slice(0, 3)} - ${s.location}: ${s.missingHours.join(',')}
+                            </span>
+                        `).join('')}
+                    </div>
                 </div>
             `;
         }
@@ -2018,10 +2241,16 @@
                                          ondragover="handleDragOver(event)" 
                                          ondragleave="handleDragLeave(event)" 
                                          ondrop="handleDrop(event, '${day}', ${loc.id})">
-                                        <div style="display: flex; flex-direction: column; gap: 4px; height: 100%;">
-                                            ${assigned.map(t => {
-                    const win = getTeacherStayWindow(t, day);
-                    const winStr = win ? `<span style="font-size: 0.65rem; opacity: 0.7; font-weight: 400;"> [${win.start}-${win.end}]</span>` : '';
+                                         <div style="display: flex; flex-direction: column; gap: 4px; height: 100%;">
+                                             ${assigned.map(t => {
+                    const hasLessons = t.schedule && t.schedule[day] && t.schedule[day].some(s => s.isBusy);
+                    let hStr = "";
+                    if (!t.hourly) {
+                        hStr = `(1-8)${hasLessons ? ' <span style="color:#e53e3e;">(Dərsi var)</span>' : ''}`;
+                    } else {
+                        const win = getTeacherStayWindow(t, day);
+                        hStr = win ? `(${win.start}-${win.end})${hasLessons ? ' <span style="color:#e53e3e;">(Dərsi var)</span>' : ''}` : '(Dərs yoxdur)';
+                    }
                     return `
                                                 <div class="assignment-badge draggable" 
                                                      draggable="true"
@@ -2029,8 +2258,7 @@
                                                      ondragend="handleDragEnd(event)"
                                                      onclick="openAssignModal('${day}', ${loc.id})" 
                                                      style="font-size: 0.75rem; padding: 4px 8px; line-height: 1.1; flex-direction: column; align-items: flex-start; gap: 2px;">
-                                                    <div>${t.name} ${t.surname.charAt(0)}.</div>
-                                                    ${winStr}
+                                                     <div><strong>${t.name} ${t.surname.charAt(0)}.</strong> <span style="font-size: 0.65rem; color: #2c5282; font-weight: 700;">${hStr}</span></div>
                                                 </div>
                                             `}).join('')}
                                             <div class="empty-slot" 
@@ -2229,14 +2457,21 @@
                     <label style="font-weight: 700; display: block; margin-bottom: 0.5rem; color: var(--primary);">Təyin edilmiş müəllimlər:</label>
                     <div id="assigned-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
                         ${assignedTeachers.length > 0 ? assignedTeachers.map(t => {
-                const win = getTeacherStayWindow(t, day);
+                if (!t.hourly) {
+                    const hasLessons = t.schedule && t.schedule[day] && t.schedule[day].some(s => s.isBusy);
+                    hStr = `(1-8)${hasLessons ? ' <span style="color:#e53e3e;">(Dərsi var)</span>' : ''}`;
+                } else {
+                    const win = getTeacherStayWindow(t, day);
+                    const hasLessons = t.schedule && t.schedule[day] && t.schedule[day].some(s => s.isBusy);
+                    hStr = win ? `(${win.start}-${win.end})${hasLessons ? ' <span style="color:#e53e3e;">(Dərsi var)</span>' : ''}` : '(Dərs yoxdur)';
+                }
                 const conflictHtml = renderConflictWarning(t.id, day);
                 return `
                             <div style="display:flex; flex-direction: column; background: var(--bg-card); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border);">
                                 <div style="display:flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <strong>${t.name} ${t.surname}</strong>
-                                        <div style="font-size: 0.75rem; color: var(--text-muted);">Məktəbdədir: ${win ? `${win.start} - ${win.end}` : 'Məlum deyil'}</div>
+                                        <div style="font-size: 0.75rem; color: var(--primary); font-weight: 600;">Növbə saatları: ${hStr}</div>
                                     </div>
                                     <button class="btn btn-danger" onclick="removeAssignment('${day}', ${locationId}, ${t.id})" style="padding: 4px 10px; font-size: 0.8rem;">Sil</button>
                                 </div>
@@ -2255,8 +2490,10 @@
                         ${[...state.teachers]
                     .sort((a, b) => a.name.localeCompare(b.name) || a.surname.localeCompare(b.surname))
                     .filter(t => {
-                        // Əllə əlavə etmədə hamı görünsün (alfabetik artıq sort olunub)
-                        // Amma artıq bu yerə yazılıbsa göstərməyə bilərik (isteğe bağlı)
+                        const locIsGym = loc.name.toLowerCase().includes('idman') || loc.id == 10;
+                        const tIsSports = isSportsTeacher(t);
+                        if (locIsGym && !tIsSports) return false;
+                        if (!locIsGym && tIsSports) return false;
                         return true;
                     })
                     .map(t => {
@@ -2689,23 +2926,13 @@
         };
 
 
-        window.isSportsTeacher = (t) => {
-            if (!t) return false;
-            // Birinci ixtisasa baxırıq
-            if (t.branch && t.branch.toLowerCase().includes('idman')) return true;
-            // İkinci olaraq konkret ad/soyad yoxlaması (ixtisası hələ yenilənməyənlər üçün)
-            const sportsNames = [
-                { n: 'Emin', s: 'Sultanzadə' },
-                { n: 'Xəyalə', s: 'Qiyasova' },
-                { n: 'Şamil', s: 'Süleymanov' }
-            ];
-            return sportsNames.some(sn =>
-                t.name.includes(sn.n) && t.surname.includes(sn.s)
-            );
-        };
+        // Global isSportsTeacher helper is defined at the top
 
         // Limit Hesablama Helper
         window.getTeacherLimit = (t) => {
+            // İdman müəllimləri üçün limit yoxdur (5 gün növbə tuta bilərlər)
+            if (isSportsTeacher(t)) return 5;
+
             const h = t.totalHours !== undefined ? Number(t.totalHours) :
                 (t.schedule ? Object.values(t.schedule).reduce((acc, day) => acc + (Array.isArray(day) ? day.filter(s => s.isBusy).length : 0), 0) : 0);
 
@@ -2732,219 +2959,123 @@
         window.autoAssignDuties = () => {
             if (!confirm('Boş xanalar avtomatik paylanacaq. Davam etmək istəyirsiniz?')) return;
 
-            // İdman zalını tanımaq üçün universal funksiya
-            const isGym = (loc) => {
-                if (!loc) return false;
-                if (loc.id == 10) return true; // ID ilə dəqiq yoxlama
-                const n = (loc.name || '').toLowerCase();
-                return n.includes('idman') || n.includes('İdman');
-            };
-
-            // 0. Qeyri-qanuni təyinatları təmizlə
-            let cleaned = 0;
+            // 0. Qeyri-qanuni təyinatları təmizlə (idman müəllimi idman yerində, digərləri digər yerlərdə)
             Object.keys(state.assignments).forEach(key => {
                 const locId = key.split('-')[1];
                 const loc = state.locations.find(l => l.id == locId);
                 if (!loc) return;
-
                 const locIsGym = isGym(loc);
 
                 state.assignments[key] = state.assignments[key].filter(tid => {
                     const t = state.teachers.find(te => te.id == tid);
                     if (!t) return false;
-                    const isS = isSportsTeacher(t);
-
-                    // İdman zalıdırsa və müəllim idmançı deyilsə -> SİL
-                    if (locIsGym && !isS) { cleaned++; return false; }
-                    // İdman zalı deyilsə və müəllim idmançıdırsa -> SİL
-                    if (!locIsGym && isS) { cleaned++; return false; }
-
+                    const tIsSports = isSportsTeacher(t);
+                    if (locIsGym && !tIsSports) return false;
+                    if (!locIsGym && tIsSports) return false;
                     return true;
                 });
                 if (state.assignments[key].length === 0) delete state.assignments[key];
             });
 
-            // 1. Hazırlıq: Limitlər və Cari Saylar
+            // 1. Hazırlıq
             const teacherLimits = {};
             state.teachers.forEach(t => { teacherLimits[t.id] = getTeacherLimit(t); });
 
             const currentCounts = {};
             state.teachers.forEach(t => currentCounts[t.id] = 0);
             Object.values(state.assignments).forEach(ids => {
-                if (Array.isArray(ids)) {
-                    ids.forEach(tid => {
-                        const nid = String(tid);
-                        if (currentCounts[nid] !== undefined) currentCounts[nid]++;
-                    });
-                }
+                if (Array.isArray(ids)) ids.forEach(tid => { if (currentCounts[tid] !== undefined) currentCounts[tid]++; });
             });
 
             let assignedCount = 0;
             const days = state.days;
             const locations = [...state.locations];
 
-            const getCoverage = (day, locId) => {
-                const coverage = new Array(8).fill(false);
-                const ids = state.assignments[`${day}-${locId}`] || [];
-                ids.forEach(tid => {
-                    const t = state.teachers.find(te => te.id == tid);
-                    if (!t) return;
-                    const win = getTeacherStayWindow(t, day);
-                    if (win) {
-                        for (let i = win.start; i <= win.end; i++) {
-                            if (i >= 1 && i <= 8) coverage[i - 1] = true;
-                        }
+            const getRequiredHours = (loc) => (loc.name || '').toLowerCase().includes('yeməkxana') ? [5, 6] : [1, 2, 3, 4, 5, 6, 7, 8];
+
+            const getTeacherCoverage = (t, day, reqHours, currentCov) => {
+                const win = getTeacherStayWindow(t, day);
+                if (!win) return [];
+                const canCover = [];
+                reqHours.forEach(h => {
+                    if (h >= win.start && h <= win.end && !currentCov[h - 1]) {
+                        const sched = t.schedule && t.schedule[day] ? t.schedule[day].find(s => s.hour == h) : null;
+                        if (!sched || !sched.isBusy) canCover.push(h);
                     }
                 });
-                return coverage;
+                return canCover;
             };
 
-            const isFullyCovered = (day, locId) => {
-                const loc = state.locations.find(l => l.id == locId);
-                const coverage = getCoverage(day, locId);
-                if (loc && (loc.name || '').toLowerCase().includes('yeməkxana')) {
-                    // Yeməkxana üçün yalnız 5 və 6-cı saatlar kifayətdir
-                    return !!(coverage[4] && coverage[5]);
-                }
-                // Digər yerlər üçün tam 8 saat
-                return coverage.every(c => c === true);
-            };
-
-            // -------------------------------------------------------------------------
-            // FAZA 1: İxtisaslaşmış İdman Zalı Paylanması (TAM 8 SAAT VƏ YALNIZ İDMANÇILAR)
-            // -------------------------------------------------------------------------
-            days.forEach(day => {
-                const gym = locations.find(l => isGym(l));
-                if (!gym) return;
-                const key = `${day}-${gym.id}`;
-                if (!state.assignments[key]) state.assignments[key] = [];
-
-                if (isFullyCovered(day, gym.id)) return;
-
-                // A) Saat hesablı idmançılar (limitlə)
-                const hourlySports = state.teachers.filter(t =>
-                    isSportsTeacher(t) && t.hourly && currentCounts[t.id] < teacherLimits[t.id]
-                );
-
-                hourlySports.forEach(t => {
-                    const win = getTeacherStayWindow(t, day);
-                    if (win && !state.assignments[key].includes(t.id)) {
-                        const curCov = getCoverage(day, gym.id);
-                        let addsValue = false;
-                        for (let i = win.start; i <= win.end; i++) if (i >= 1 && i <= 8 && !curCov[i - 1]) addsValue = true;
-
-                        if (addsValue && !isFullyCovered(day, gym.id)) {
-                            state.assignments[key].push(t.id);
-                            currentCounts[t.id]++;
-                            assignedCount++;
-                        }
-                    }
-                });
-
-                // B) Tam Ştat idmançılar - Dolana qədər limitsiz
-                const fullSports = state.teachers.filter(t => isSportsTeacher(t) && !t.hourly);
-                let attempts = 0;
-                while (!isFullyCovered(day, gym.id) && attempts < 10) {
-                    attempts++;
-                    const curCov = getCoverage(day, gym.id);
-                    const candidates = fullSports.filter(t => !state.assignments[key].includes(t.id))
-                        .sort((a, b) => currentCounts[a.id] - currentCounts[b.id]);
-
-                    if (candidates.length > 0) {
-                        state.assignments[key].push(candidates[0].id);
-                        currentCounts[candidates[0].id]++;
-                        assignedCount++;
-                    } else break;
-                }
-            });
-
-            // -------------------------------------------------------------------------
-            // FAZA 2: "Ən azı 1 dəfə növbətçi olmalı" qaydası
-            // -------------------------------------------------------------------------
-            const mandateTeachers = state.teachers.filter(t =>
-                !isSportsTeacher(t) && currentCounts[t.id] === 0 && teacherLimits[t.id] > 0
-            ).sort(() => Math.random() - 0.5);
-
-            mandateTeachers.forEach(t => {
-                for (let d of days) {
-                    const win = getTeacherStayWindow(t, d);
-                    if (!win) continue;
-
-                    for (let loc of locations) {
-                        if (isGym(loc)) continue;
-                        if (isFullyCovered(d, loc.id)) continue;
-
-                        const key = `${d}-${loc.id}`;
-                        if (!state.assignments[key]) state.assignments[key] = [];
-                        if (state.assignments[key].includes(t.id)) continue;
-
-                        const curCov = getCoverage(d, loc.id);
-                        let addsValue = false;
-                        for (let i = win.start; i <= win.end; i++) {
-                            if (i >= 1 && i <= 8 && !curCov[i - 1]) {
-                                if ((loc.name || '').toLowerCase().includes('yeməkxana')) {
-                                    if (i === 5 || i === 6) addsValue = true;
-                                } else addsValue = true;
-                            }
-                        }
-
-                        if (addsValue && currentCounts[t.id] < teacherLimits[t.id]) {
-                            state.assignments[key].push(t.id);
-                            currentCounts[t.id]++;
-                            assignedCount++;
-                            return;
-                        }
-                    }
-                }
-            });
-
-            // -------------------------------------------------------------------------
-            // FAZA 3: Ümumi doldurma (Qalan boşluqlar)
-            // -------------------------------------------------------------------------
+            // Distribution Logic
             days.forEach(day => {
                 locations.forEach(loc => {
-                    if (isGym(loc)) return; // İdman zalına toxunma!
                     const key = `${day}-${loc.id}`;
                     if (!state.assignments[key]) state.assignments[key] = [];
+                    const locIsGym = isGym(loc);
+                    const reqHours = getRequiredHours(loc);
 
-                    let attempts = 0;
-                    while (!isFullyCovered(day, loc.id) && attempts < 20) {
-                        attempts++;
-                        const curCov = getCoverage(day, loc.id);
+                    // 1. Əgər artıq tam ştatlı (tam kadro) müəllim varsa, o bəs edir.
+                    const assigned = state.assignments[key].map(tid => state.teachers.find(t => t.id == tid)).filter(Boolean);
+                    if (assigned.some(t => !t.hourly && isFullyCovered(day, loc.id))) return;
 
-                        const candidates = state.teachers.filter(t => {
-                            if (isSportsTeacher(t)) return false;
-                            if (currentCounts[t.id] >= teacherLimits[t.id]) return false;
-                            if (state.assignments[key].includes(t.id)) return false;
+                    // 2. Əgər boşdursa və ya yalnız saat hesablı varsa:
+                    if (isFullyCovered(day, loc.id)) return;
 
-                            const win = getTeacherStayWindow(t, day);
-                            if (!win) return false;
+                    // PRIORİTET A: Tam ştatlı bir müəllimi təkbaşına ora qoymaq (Mümkünsə)
+                    const fullTimeCands = state.teachers.filter(t =>
+                        isSportsTeacher(t) === locIsGym &&
+                        !t.hourly &&
+                        currentCounts[t.id] < teacherLimits[t.id] &&
+                        !state.assignments[key].includes(t.id) &&
+                        getTeacherCoverage(t, day, reqHours, []).length === reqHours.length
+                    ).sort((a, b) => currentCounts[a.id] - currentCounts[b.id]);
 
-                            for (let i = win.start; i <= win.end; i++) {
-                                if (i >= 1 && i <= 8 && !curCov[i - 1]) {
-                                    if ((loc.name || '').toLowerCase().includes('yeməkxana')) {
-                                        if (i === 5 || i === 6) return true;
-                                    } else return true;
-                                }
-                            }
-                            return false;
-                        }).sort((a, b) => {
-                            if (a.hourly !== b.hourly) return a.hourly ? -1 : 1;
-                            return currentCounts[a.id] - currentCounts[b.id];
-                        });
+                    if (fullTimeCands.length > 0) {
+                        // Tam ştatlı müəllimi tapdıqsa, varsa köhnə xırda növbələri silib tək bunu yaza bilərik
+                        // İstifadəçi "2 kişi yazmaya gerek yok" dediyi üçün tək bunu saxlayırıq.
+                        state.assignments[key] = [fullTimeCands[0].id];
+                        currentCounts[fullTimeCands[0].id]++;
+                        assignedCount++;
+                        return;
+                    }
 
-                        if (candidates.length > 0) {
-                            state.assignments[key].push(candidates[0].id);
-                            currentCounts[candidates[0].id]++;
+                    // PRIORİTET B: Saat hesablı müəllimi boşluğu doldurmaq üçün istifadə etmək
+                    const hourlyCands = state.teachers.filter(t =>
+                        isSportsTeacher(t) === locIsGym &&
+                        t.hourly &&
+                        currentCounts[t.id] < teacherLimits[t.id] &&
+                        !state.assignments[key].includes(t.id)
+                    ).map(t => ({ t, cov: getTeacherCoverage(t, day, reqHours, getCoverage(day, loc.id)) }))
+                        .filter(c => c.cov.length > 0)
+                        .sort((a, b) => b.cov.length - a.cov.length);
+
+                    if (hourlyCands.length > 0) {
+                        state.assignments[key].push(hourlyCands[0].t.id);
+                        currentCounts[hourlyCands[0].t.id]++;
+                        assignedCount++;
+                    }
+
+                    // PRIORİTET C: Saat hesablıdan sonra hələ də boşluq qalıbsa, bir tam ştatlı filler əlavə et
+                    if (!isFullyCovered(day, loc.id)) {
+                        const fillers = state.teachers.filter(t =>
+                            isSportsTeacher(t) === locIsGym &&
+                            !t.hourly &&
+                            currentCounts[t.id] < teacherLimits[t.id] &&
+                            !state.assignments[key].includes(t.id)
+                        ).sort((a, b) => currentCounts[a.id] - currentCounts[b.id]);
+
+                        if (fillers.length > 0) {
+                            state.assignments[key].push(fillers[0].id);
+                            currentCounts[fillers[0].id]++;
                             assignedCount++;
-                        } else break;
+                        }
                     }
                 });
             });
 
             saveState();
             renderView();
-            alert(`${assignedCount} yeni növbə təyin edildi!`);
+            alert(`Paylanma tamamlandı! ${assignedCount} yeni təyinat edildi.`);
         };
 
 
@@ -3337,18 +3468,18 @@
 
             state.days.forEach(day => {
                 state.locations.forEach(loc => {
-                    const ids = state.assignments[`${day}-${loc.id}`] || [];
+                    const coverage = getCoverage(day, loc.id);
+                    const isYem = loc.name.toLowerCase().includes('yeməkxana');
+                    const target = isYem ? [4, 5] : [0, 1, 2, 3, 4, 5, 6, 7]; // index
 
-                    // Yeməkxana xüsusi hal - sadəcə 5-6 saatlar üçün lazımdır
-                    if (loc.name.includes('Yeməkxana')) {
-                        if (ids.length === 0) {
-                            shortages.push({ day, location: loc.name, locId: loc.id, type: 'empty' });
-                        }
-                    } else {
-                        // Digər yerlər - bütün gün üçün lazımdır
-                        if (ids.length === 0) {
-                            shortages.push({ day, location: loc.name, locId: loc.id, type: 'empty' });
-                        }
+                    const missing = target.filter(i => !coverage[i]).map(i => i + 1);
+                    if (missing.length > 0) {
+                        shortages.push({
+                            day,
+                            location: loc.name,
+                            locId: loc.id,
+                            missingHours: missing
+                        });
                     }
                 });
             });
@@ -3361,25 +3492,28 @@
             if (shortages.length === 0) return '';
 
             return `
-                <div class="shortage-warning">
-                    <div class="shortage-warning-icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                            <line x1="12" y1="9" x2="12" y2="13"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17"/>
-                        </svg>
-                    </div>
-                    <div class="shortage-warning-content">
-                        <h4>⚠️ Çatışmazlıq Xəbərdarlığı!</h4>
-                        <p><strong>${shortages.length}</strong> nöbet yeri boşdur. Zəhmət olmasa aşağıdakılara müəllim təyin edin:</p>
-                        <div class="shortage-list">
-                            ${shortages.slice(0, 10).map(s => `
-                                <span class="shortage-item" onclick="openAssignModal('${s.day}', ${s.locId})">
-                                    ${s.day.slice(0, 3)} - ${s.location}
-                                </span>
-                            `).join('')}
-                            ${shortages.length > 10 ? `<span class="shortage-item" style="background: #f59e0b; color: white;">+${shortages.length - 10} daha</span>` : ''}
+                <div class="shortage-warning" style="flex-direction: column; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; width: 100%;">
+                        <div class="shortage-warning-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
                         </div>
+                        <div style="flex: 1;">
+                            <h4 style="margin:0; font-size: 0.9rem;">⚠️ Çatışmazlıq Xəbərdarlığı!</h4>
+                            <p style="margin:0; font-size: 0.8rem;"><strong>${shortages.length}</strong> nöqtədə boşluq var.</p>
+                        </div>
+                        <button class="btn btn-secondary" onclick="document.getElementById('shortage-list-el').classList.toggle('expanded')" style="padding: 4px 12px; font-size: 0.75rem; background: #fff; border: 1px solid #feb2b2; color: #c53030;">
+                            Siyahıya bax
+                        </button>
+                    </div>
+                    <div class="shortage-list" id="shortage-list-el">
+                        ${shortages.map(s => `
+                            <span class="shortage-item" onclick="openAssignModal('${s.day}', ${s.locId})">
+                                <strong>${s.day.slice(0, 3)} - ${s.location}:</strong> ${s.missingHours.join(', ')}
+                            </span>
+                        `).join('')}
                     </div>
                 </div>
             `;
@@ -3479,7 +3613,7 @@
         // ===== FEATURE 6: SMART RECOMMENDATION =====
         function getSmartRecommendations(day, locationId, topN = 5) {
             const loc = state.locations.find(l => l.id == locationId);
-            const isGym = loc && (loc.name.toLowerCase().includes('idman') || loc.id === 10);
+            const isTargetGym = isGym(loc);
             const currentAssigned = state.assignments[`${day}-${locationId}`] || [];
 
             // Duty counts for all teachers
@@ -3495,8 +3629,13 @@
                 .filter(t => {
                     // Artıq təyin edilmişsə keç
                     if (currentAssigned.includes(t.id)) return false;
-                    // İdman zalı üçün yalnız idman müəllimləri
-                    if (isGym && t.branch !== 'İdman') return false;
+
+                    const tIsSports = window.isSportsTeacher(t); // Use global helper
+                    // İdman zalıdırsa, yalnız idmançılar
+                    if (isTargetGym && !tIsSports) return false;
+                    // İdman zalı deyilsə, idmançılar olmasın
+                    if (!isTargetGym && tIsSports) return false;
+
                     return true;
                 })
                 .map(t => {
@@ -3547,8 +3686,11 @@
                             <div class="recommendation-item" onclick="quickAssign('${day}', ${locationId}, ${r.teacher.id})">
                                 <span class="recommendation-name">
                                     ${i + 1}. ${r.teacher.name} ${r.teacher.surname}
-                                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">
-                                        (${r.win ? `${r.win.start}-${r.win.end} saat` : '??'})
+                                    <span style="font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; margin-left: 5px; background: ${r.teacher.hourly ? '#fef3c7' : '#e0f2f1'}; color: ${r.teacher.hourly ? '#92400e' : '#00525d'}; font-weight: 700;">
+                                        ${r.teacher.hourly ? 'Saat Hes.' : 'Tam Ştat'}
+                                    </span>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal; margin-left: 4px;">
+                                        (${!r.teacher.hourly ? '1-8' : (r.win ? `${r.win.start}-${r.win.end}` : '??')})
                                     </span>
                                 </span>
                                 <span class="recommendation-score">
@@ -3578,4 +3720,3 @@
 
 
 </html>
-
