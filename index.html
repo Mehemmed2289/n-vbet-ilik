@@ -1667,7 +1667,7 @@
                             state.assignments = data.assignments || {};
 
                             localStorage.setItem('last_cloud_update', data.updated_at);
-                            updateSyncStatus('online', 'Google Bulud Aktivdir');
+                            updateSyncStatus('online', 'Buludla sinxron edildi');
                             renderView();
                         } else {
                             // Baza boşdursa ilkin datanı göndər
@@ -1712,6 +1712,7 @@
                         state.locations = data.locations || [];
                         state.assignments = data.assignments || {};
                         localStorage.setItem('last_cloud_update', data.updated_at);
+                        updateSyncStatus('online', 'Sinxronizasiya yeniləndi');
                         renderView();
                     }
                 });
@@ -1744,7 +1745,7 @@
             localStorage.setItem('assignments', JSON.stringify(state.assignments));
 
             if (db) {
-                updateSyncStatus('pending', 'Google-a yazılır...');
+                updateSyncStatus('pending', 'Buluda sinxron edilir...');
                 try {
                     const updatedAt = new Date().toISOString();
                     const payload = {
@@ -1757,7 +1758,7 @@
                     await db.set(payload);
 
                     localStorage.setItem('last_cloud_update', updatedAt);
-                    updateSyncStatus('online', 'Google Buludda saxlanıldı');
+                    updateSyncStatus('online', 'Sinxronizasiya tamamlandı');
                 } catch (err) {
                     console.error("Save error:", err);
                     updateSyncStatus('offline', 'Xəta: ' + err.message);
