@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Növbətçi Müəllim Sistemi | Azərbaycan Beynəlxalq Maarif</title>
-    <!-- Cloud Sync: KVDB.io -->
+    <!-- Cloud Sync: JSONbin.io -->
     <meta name="description"
         content="Məktəb növbətçi müəllim paylanma və idarəetmə sistemi. Müasir, sürətli və asan istifadə.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1591,10 +1591,10 @@
     </div>
 
     <script>
-        // ===== BULUD SİNXRONİZASİYASI AYARLARI (KVDB.io) =====
-        // https://kvdb.io saytından aldığınız Bucket ID-ni bura yazın:
-        const KVDB_BUCKET_ID = "Gxkye4Q6Mmi25rXM7m8tzU";
-        const KVDB_KEY = "duty_system_data";
+        // ===== BULUD SİNXRONİZASİYASI AYARLARI (JSONbin.io) =====
+        // Sürətli və stabil bulud bazası
+        const JSONBIN_BIN_ID = "67a1b023ad19ca34f8f7470f"; // Hazır Bin ID
+        const JSONBIN_MASTER_KEY = "$2a$10$779Sny/jR8WOnC8oX.zIKeR1H67T4x3tG0SAtv6sOas5B0id7m4qO"; // Master Key
 
         // Status yeniləmə funksiyası
         function updateSyncStatus(status, text) {
@@ -1645,45 +1645,35 @@
             if (localLocations) state.locations = JSON.parse(localLocations);
             if (localAssignments) state.assignments = JSON.parse(localAssignments);
 
-            // KVDB-dən yüklə (sinxronizasiya üçün)
-            if (KVDB_BUCKET_ID) {
+            // JSONbin-dən yüklə
+            if (JSONBIN_BIN_ID) {
                 try {
-                    const response = await fetch(`https://kvdb.io/${KVDB_BUCKET_ID}/${KVDB_KEY}`, {
+                    const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                         method: 'GET',
-                        cache: 'no-store',
-                        mode: 'cors'
+                        headers: {
+                            'X-Master-Key': JSONBIN_MASTER_KEY
+                        }
                     });
 
                     if (response.ok) {
-                        const data = await response.json();
+                        const result = await response.json();
+                        const data = result.record;
                         state.teachers = data.teachers || [];
                         state.locations = data.locations || [];
                         state.assignments = data.assignments || {};
 
-                        // Lokala yaz
                         localStorage.setItem('teachers', JSON.stringify(state.teachers));
                         localStorage.setItem('locations', JSON.stringify(state.locations));
                         localStorage.setItem('assignments', JSON.stringify(state.assignments));
                         localStorage.setItem('last_cloud_update', data.updated_at);
 
                         updateSyncStatus('online', 'Buludla sinxron edildi');
-                    } else if (response.status === 404) {
-                        updateSyncStatus('online', 'Hazır (İlk istifadə)');
-                        if (state.teachers.length === 0) {
-                            state.teachers = DEFAULT_TEACHERS_RAW.map(t => ({
-                                id: t.id, name: t.name, surname: t.surname, branch: t.branch,
-                                hourly: t.hourly || false,
-                                schedule: createSched(t.b[0], t.b[1], t.b[2], t.b[3], t.b[4])
-                            }));
-                            state.locations = DEFAULT_LOCATIONS;
-                            saveState();
-                        }
                     } else {
-                        throw new Error(`Server xətası: ${response.status}`);
+                        throw new Error(`Baza xətası: ${response.status}`);
                     }
                 } catch (err) {
-                    console.error("Bulud dərhal yükləmə xətası:", err);
-                    updateSyncStatus('offline', 'Lokal rejim (Bağlantı yoxdur)');
+                    console.error("Bulud yükləmə xətası:", err);
+                    updateSyncStatus('offline', 'Lokal rejim (Buludda məlumat tapılmadı)');
                 }
             }
             else {
@@ -1722,11 +1712,15 @@
 
             // Avtomatik yeniləmə (30 saniyədən bir yoxla)
             setInterval(async () => {
-                if (KVDB_BUCKET_ID) {
+                if (JSONBIN_BIN_ID) {
                     try {
-                        const response = await fetch(`https://kvdb.io/${KVDB_BUCKET_ID}/${KVDB_KEY}`, { method: 'GET' });
+                        const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                            method: 'GET',
+                            headers: { 'X-Master-Key': JSONBIN_MASTER_KEY }
+                        });
                         if (response.ok) {
-                            const data = await response.json();
+                            const result = await response.json();
+                            const data = result.record;
                             if (data.updated_at !== localStorage.getItem('last_cloud_update')) {
                                 console.log("Yeni məlumat tapıldı, yenilənir...");
                                 await loadCloudData();
@@ -1759,13 +1753,11 @@
         }
 
         async function saveState() {
-            // Lokal yadda saxla
             localStorage.setItem('teachers', JSON.stringify(state.teachers));
             localStorage.setItem('locations', JSON.stringify(state.locations));
             localStorage.setItem('assignments', JSON.stringify(state.assignments));
 
-            // Buluda sinxron et
-            if (KVDB_BUCKET_ID) {
+            if (JSONBIN_BIN_ID) {
                 updateSyncStatus('pending', 'Buluda göndərilir...');
                 try {
                     const updatedAt = new Date().toISOString();
@@ -1776,25 +1768,22 @@
                         updated_at: updatedAt
                     };
 
-                    const response = await fetch(`https://kvdb.io/${KVDB_BUCKET_ID}/${KVDB_KEY}`, {
-                        method: 'POST',
+                    const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                        method: 'PUT',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': JSONBIN_MASTER_KEY
                         },
-                        body: JSON.stringify(payload),
-                        mode: 'cors'
+                        body: JSON.stringify(payload)
                     });
 
-                    if (response.status === 403) {
-                        throw new Error("Giriş bloklandı. Zəhmət olmasa tətbiqi GitHub/Vercel-ə yükləyin (CORS xətası).");
-                    }
                     if (!response.ok) throw new Error(`Status: ${response.status}`);
 
                     localStorage.setItem('last_cloud_update', updatedAt);
-                    updateSyncStatus('online', 'Buludda yadda saxlanıldı');
+                    updateSyncStatus('online', 'Məlumatlar buluda yazıldı');
                 } catch (err) {
                     console.error("Yadda saxlama xətası:", err);
-                    updateSyncStatus('offline', `Xəta: ${err.message}`);
+                    updateSyncStatus('offline', `Bulud Xətası: ${err.message}`);
                 }
             }
         }
