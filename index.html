@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Növbətçi Müəllim Sistemi | Azərbaycan Beynəlxalq Maarif</title>
+    <!-- Cloud Sync: KVDB.io -->
     <meta name="description"
         content="Məktəb növbətçi müəllim paylanma və idarəetmə sistemi. Müasir, sürətli və asan istifadə.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1557,6 +1558,10 @@
         <main class="main-content">
             <header class="top-bar">
                 <h2 id="view-title">Panel</h2>
+                <div class="sync-status" id="sync-status-container">
+                    <span class="sync-dot" id="sync-dot"></span>
+                    <span class="sync-text" id="sync-text">Buludla əlaqə qurulur...</span>
+                </div>
                 <div class="user-info">
                     <div class="live-clock">
                         <span id="live-time" class="live-time">00:00:00</span>
@@ -1586,152 +1591,151 @@
     </div>
 
     <script>
-        // ===== SIDEBAR TOGGLE FUNCTIONALITY =====
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-        const sidebar = document.getElementById('sidebar');
-        const collapseToggle = document.getElementById('collapse-toggle');
+        // ===== BULUD SİNXRONİZASİYASI AYARLARI (KVDB.io) =====
+        // https://kvdb.io saytından aldığınız Bucket ID-ni bura yazın:
+        const KVDB_BUCKET_ID = "Gxkye4Q6Mmi25rXM7m8tzU";
+        const KVDB_KEY = "duty_system_data";
 
-        // Mobile sidebar toggle
-        function toggleMobileSidebar() {
-            sidebar.classList.toggle('mobile-open');
-            sidebarOverlay.classList.toggle('active');
-            document.body.style.overflow = sidebar.classList.contains('mobile-open') ? 'hidden' : '';
-        }
-
-        function closeMobileSidebar() {
-            sidebar.classList.remove('mobile-open');
-            sidebarOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        sidebarToggle.addEventListener('click', toggleMobileSidebar);
-        sidebarOverlay.addEventListener('click', closeMobileSidebar);
-
-        // Desktop collapse toggle
-        function toggleDesktopSidebar() {
-            sidebar.classList.toggle('collapsed');
-            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
-        }
-
-        collapseToggle.addEventListener('click', toggleDesktopSidebar);
-
-        // Restore sidebar state from localStorage
-        if (localStorage.getItem('sidebarCollapsed') === 'true' && window.innerWidth > 768) {
-            sidebar.classList.add('collapsed');
-        }
-
-        // Close mobile sidebar when nav item is clicked
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    closeMobileSidebar();
-                }
-            });
-        });
-
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 768) {
-                closeMobileSidebar();
+        // Status yeniləmə funksiyası
+        function updateSyncStatus(status, text) {
+            const dot = document.getElementById('sync-dot');
+            const label = document.getElementById('sync-text');
+            if (dot && label) {
+                dot.className = 'sync-dot ' + status;
+                label.textContent = text;
             }
-        });
+        }
 
-        const createSched = (m, tu, w, th, f) => {
-            const days = ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə'];
-            const data = [m, tu, w, th, f];
-            const schedule = {};
-            days.forEach((day, i) => {
-                schedule[day] = [1, 2, 3, 4, 5, 6, 7, 8].map(h => ({ hour: h, isBusy: data[i].includes(h) }));
-            });
-            return schedule;
-        };
+        // ===== DATA DEFAULTS =====
+        // Müəllim siyahısı və yerlər artıq boşdur (0-dan başlamaq üçün)
+        const DEFAULT_TEACHERS_RAW = [];
+
+        const DEFAULT_LOCATIONS = [
+            { id: 1, name: 'A-blok ətrafı' },
+            { id: 2, name: 'B-blok ətrafı' },
+            { id: 3, name: 'C-blok ətrafı' },
+            { id: 4, name: 'D-blok ətrafı' },
+            { id: 5, name: 'B-blok daxili' },
+            { id: 6, name: 'C-blok daxili' },
+            { id: 7, name: 'D-blok daxili' },
+            { id: 8, name: 'Yeməkxana - 1' },
+            { id: 9, name: 'Yeməkxana - 2' },
+            { id: 10, name: 'İdman zalı' }
+        ];
 
         const state = {
             view: 'dashboard',
-            teachers: (() => {
-                // Əvvəlcə yaddaşa bax, varsa onu qaytar
-                const stored = localStorage.getItem('teachers');
-                if (stored) return JSON.parse(stored);
-
-                const rawData = [
-                    { id: 101, name: 'Aynurə', surname: 'Qurban', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6], [1, 2, 3], [], [1, 2, 4], [1, 2, 4]] },
-                    { id: 102, name: 'Nənəxanım', surname: 'Qəfərova', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3], [1, 2, 3], [1, 2, 3], []] },
-                    { id: 103, name: 'Könül', surname: 'Əhmədova', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6, 7, 8], [1, 3, 4], [1, 2, 3], [1, 2, 4], [1, 2]] },
-                    { id: 104, name: 'Mədinə', surname: 'Məmmədova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [], [1, 2, 3], [1, 2, 3, 4], [1]] },
-                    { id: 105, name: 'Gülnar', surname: 'Səttarlı', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [], [], [], [1, 2, 3, 4]] },
-                    { id: 106, name: 'Xəyalə', surname: 'Əsgərli', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [], [1, 2, 3, 4], [], [1, 2, 3, 4]] },
-                    { id: 107, name: 'Məhbubə', surname: 'Talıblı', branch: 'Müəllim', hourly: false, b: [[1, 4, 5, 6, 7, 8], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3], [1, 2, 3, 4]] },
-                    { id: 108, name: 'Fəridə', surname: 'Alqayeva', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7, 8], [1, 2, 3], [1, 2], [1, 2], [1, 2, 3, 4]] },
-                    { id: 109, name: 'Fərqanə', surname: 'Qənbərli', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6], [1, 2, 3], [], [], [1, 2, 3, 4]] },
-                    { id: 110, name: 'Aytac', surname: 'Əhmədova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1, 2, 3, 4], [], [1, 3], []] },
-                    { id: 111, name: 'Günel', surname: 'Axundova', branch: 'Müəllim', hourly: false, b: [[1, 3, 4, 5, 6], [1, 2, 3], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 4]] },
-                    { id: 112, name: 'Saffet', surname: 'Yılmaz', branch: 'Müəllim', hourly: false, b: [[1, 2, 4, 5, 6, 7], [1], [1, 2], [1, 2, 3], [1, 2]] },
-                    { id: 113, name: 'Adil', surname: 'Çaxoyev', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1, 2, 3, 4], [1, 2, 3, 4], [1], [1, 2, 3, 4]] },
-                    { id: 114, name: 'Şəbnəm', surname: 'Zeynalova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [], [1, 2], [1, 2, 3, 4], [1, 2]] },
-                    { id: 115, name: 'Pərvin', surname: 'Əşari', branch: 'Müəllim', hourly: false, b: [[1, 3, 4, 5, 6, 8], [1, 2, 3], [1, 2, 4], [1, 2, 3, 4], [1, 4]] },
-                    { id: 116, name: 'Fatma', surname: 'Valiyev', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6], [1, 2], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2]] },
-                    { id: 117, name: 'Xəyalə', surname: 'Qiyasova', branch: 'İdman', hourly: true, b: [[1, 5, 6], [1, 2, 3, 4], [], [1, 2, 3], [1, 2, 3, 4]] },
-                    { id: 118, name: 'Şamil', surname: 'Süleymanov.', branch: 'İdman', hourly: false, b: [[1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]] },
-                    { id: 119, name: 'Emin', surname: 'Sultanzadə', branch: 'İdman', hourly: true, b: [[1, 5, 6, 7, 8], [1, 2], [], [], [1, 2]] },
-                    { id: 120, name: 'Aytac', surname: 'Musabəyli', branch: 'Müəllim', hourly: false, b: [[1, 3, 4, 5, 6, 7, 8], [1, 2], [1, 2, 3, 4], [1, 4], [1, 2, 3]] },
-                    { id: 121, name: 'İlahə', surname: 'Əkbərova', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7], [1, 3, 4], [1, 2], [1, 2, 4], [1]] },
-                    { id: 122, name: 'Sura', surname: 'Kərimova', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6, 7, 8], [1, 3, 4], [1, 2, 3], [1, 2], [1, 2, 3, 4]] },
-                    { id: 123, name: 'Günel', surname: 'Hətəmzadə', branch: 'Müəllim', hourly: false, b: [[1, 2, 5, 6, 7, 8], [1, 2, 3, 4], [1, 3, 4], [1, 2, 3, 4], [1, 2, 3]] },
-                    { id: 124, name: 'Türkan', surname: 'Qurbanova', branch: 'Müəllim', hourly: false, b: [[1, 3, 4, 5, 6, 7, 8], [1, 2], [1, 2, 4], [1, 2, 4], [1, 2]] },
-                    { id: 125, name: 'Günel', surname: 'Hüseynova', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 4, 5, 6], [1, 4], [1, 2, 4], [1, 2, 3], [1, 4]] },
-                    { id: 126, name: 'Sevil', surname: 'Babaşova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1, 3, 4], [1, 2, 3, 4], [], []] },
-                    { id: 127, name: 'Gülsəba', surname: 'Aktaş', branch: 'Müəllim', hourly: false, b: [[1, 2, 4, 5, 6, 7, 8], [1], [1, 3], [1, 3, 4], [1, 4]] },
-                    { id: 128, name: 'Nəzrin', surname: 'Həsənova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [], [], [], []] },
-                    { id: 129, name: 'Fidan', surname: 'Abdulkərimova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7, 8], [1, 3, 4], [1, 4], [1, 2, 3], [1, 4]] },
-                    { id: 130, name: 'Fəridə', surname: 'Sultanzadə', branch: 'Müəllim', hourly: false, b: [[1, 2, 3, 5, 6, 8], [1, 2], [1, 2, 4], [1, 4], [1, 2]] },
-                    { id: 131, name: 'Mədinə', surname: 'Nağıyeva', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7, 8], [1, 4], [1], [1, 2, 4], [1, 2, 3, 4]] },
-                    { id: 132, name: 'Leyla', surname: 'Şəfaqətova', branch: 'Müəllim', hourly: false, b: [[1, 2, 5, 6, 7, 8], [1], [1, 4], [1, 2, 4], [1, 2, 3, 4]] },
-                    { id: 133, name: 'Nərminə', surname: 'İbrahimli', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7, 8], [1, 2, 3, 4], [1], [1, 2, 4], [1]] },
-                    { id: 134, name: 'Şəlalə', surname: 'Məcidova', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7, 8], [1, 2, 3, 4], [1, 2], [1], [1]] },
-                    { id: 135, name: 'Gülnar', surname: 'İbrahimova', branch: 'Müəllim', hourly: false, b: [[1, 2, 5, 6, 7], [1, 2], [1], [1, 2], [1, 2, 3]] },
-                    { id: 136, name: 'Sənubər', surname: 'Baxşəliyeva', branch: 'Müəllim', hourly: false, b: [[1, 3, 5, 6, 7, 8], [1, 2], [1, 2, 3], [1, 2], [1, 2, 4]] },
-                    { id: 137, name: 'Gültəkin', surname: 'Qululu', branch: 'Müəllim', hourly: false, b: [[1, 5, 6], [1], [1, 2], [1], []] },
-                    { id: 138, name: 'Aygün', surname: 'Mansurova', branch: 'Müəllim', hourly: false, b: [[1, 5, 6, 7], [], [1], [], []] },
-                    { id: 140, name: 'Aysu', surname: 'Mirzayeva', branch: 'Müəllim', hourly: false, b: [[2, 4, 6], [], [6, 7, 8], [], [5, 6, 8]] },
-                    { id: 141, name: 'Aynur', surname: 'Mammadova', branch: 'Müəllim', hourly: false, b: [[5, 6, 7], [], [7, 8], [], [6, 7, 8, 9]] },
-                    { id: 142, name: 'Şahnaz', surname: 'Sarıyeva', branch: 'Müəllim', hourly: false, b: [[2, 3, 4], [2, 3, 4], [2, 4], [], [2, 3, 4]] }
-                ];
-
-                return rawData.map(t => ({
-                    id: t.id,
-                    name: t.name,
-                    surname: t.surname,
-                    branch: t.branch,
-                    hourly: t.hourly || false,
-                    schedule: createSched(t.b[0], t.b[1], t.b[2], t.b[3], t.b[4])
-                }));
-            })(),
+            teachers: [],
             schedulePeriods: [1, 2, 3, 4, 5, 6, 7, 8],
-            locations: JSON.parse(localStorage.getItem('locations')) || [
-                { id: 1, name: 'A-blok ətrafı' },
-                { id: 2, name: 'B-blok ətrafı' },
-                { id: 3, name: 'C-blok ətrafı' },
-                { id: 4, name: 'D-blok ətrafı' },
-                { id: 5, name: 'B-blok daxili' },
-                { id: 6, name: 'C-blok daxili' },
-                { id: 7, name: 'D-blok daxili' },
-                { id: 8, name: 'Yeməkxana - 1' },
-                { id: 9, name: 'Yeməkxana - 2' },
-                { id: 10, name: 'İdman zalı' }
-            ],
-            assignments: JSON.parse(localStorage.getItem('assignments')) || {},
+            locations: [],
+            assignments: {},
             days: ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə']
         };
 
+        // ===== DATA LOADING Məntiqi =====
+        async function loadCloudData() {
+            updateSyncStatus('pending', 'Verilənlər yüklənir...');
+
+            // Lokaldan yüklə (sürətli giriş üçün)
+            const localTeachers = localStorage.getItem('teachers');
+            const localLocations = localStorage.getItem('locations');
+            const localAssignments = localStorage.getItem('assignments');
+
+            if (localTeachers) state.teachers = JSON.parse(localTeachers);
+            if (localLocations) state.locations = JSON.parse(localLocations);
+            if (localAssignments) state.assignments = JSON.parse(localAssignments);
+
+            // KVDB-dən yüklə (sinxronizasiya üçün)
+            if (KVDB_BUCKET_ID) {
+                try {
+                    const response = await fetch(`https://kvdb.io/${KVDB_BUCKET_ID}/${KVDB_KEY}`, {
+                        method: 'GET',
+                        cache: 'no-store',
+                        mode: 'cors'
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        state.teachers = data.teachers || [];
+                        state.locations = data.locations || [];
+                        state.assignments = data.assignments || {};
+
+                        // Lokala yaz
+                        localStorage.setItem('teachers', JSON.stringify(state.teachers));
+                        localStorage.setItem('locations', JSON.stringify(state.locations));
+                        localStorage.setItem('assignments', JSON.stringify(state.assignments));
+                        localStorage.setItem('last_cloud_update', data.updated_at);
+
+                        updateSyncStatus('online', 'Buludla sinxron edildi');
+                    } else if (response.status === 404) {
+                        updateSyncStatus('online', 'Hazır (İlk istifadə)');
+                        if (state.teachers.length === 0) {
+                            state.teachers = DEFAULT_TEACHERS_RAW.map(t => ({
+                                id: t.id, name: t.name, surname: t.surname, branch: t.branch,
+                                hourly: t.hourly || false,
+                                schedule: createSched(t.b[0], t.b[1], t.b[2], t.b[3], t.b[4])
+                            }));
+                            state.locations = DEFAULT_LOCATIONS;
+                            saveState();
+                        }
+                    } else {
+                        throw new Error(`Server xətası: ${response.status}`);
+                    }
+                } catch (err) {
+                    console.error("Bulud dərhal yükləmə xətası:", err);
+                    updateSyncStatus('offline', 'Lokal rejim (Bağlantı yoxdur)');
+                }
+            }
+            else {
+                // KVDB qurulmayıbsa default-lara bax
+                if (state.teachers.length === 0) {
+                    state.teachers = DEFAULT_TEACHERS_RAW.map(t => ({
+                        id: t.id, name: t.name, surname: t.surname, branch: t.branch,
+                        hourly: t.hourly || false,
+                        schedule: createSched(t.b[0], t.b[1], t.b[2], t.b[3], t.b[4])
+                    }));
+                    state.locations = DEFAULT_LOCATIONS;
+                }
+                updateSyncStatus('offline', 'Lokal rejim (KVDB ayarlanmayıb)');
+            }
+        }
+
+        function createSched(b1, b2, b3, b4, b5) {
+            const s = {};
+            const days = ['Bazar ertəsi', 'Çərşənbə axşamı', 'Çərşənbə', 'Cümə axşamı', 'Cümə'];
+            [b1, b2, b3, b4, b5].forEach((b, i) => {
+                s[days[i]] = [1, 2, 3, 4, 5, 6, 7, 8].map(h => ({ hour: h, isBusy: b.includes(h) }));
+            });
+            return s;
+        }
+
         // Tətbiqi başlat
-        document.addEventListener('DOMContentLoaded', () => {
-            patchSportsTeachers(); // İxtisasları yoxla və düzəlt
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadCloudData(); // Verilənləri yüklə (Cloud prioritized)
+
+            patchSportsTeachers();
             setupNavigation();
             updateDateTime();
             startClock();
             renderView();
             setupTheme();
+
+            // Avtomatik yeniləmə (30 saniyədən bir yoxla)
+            setInterval(async () => {
+                if (KVDB_BUCKET_ID) {
+                    try {
+                        const response = await fetch(`https://kvdb.io/${KVDB_BUCKET_ID}/${KVDB_KEY}`, { method: 'GET' });
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.updated_at !== localStorage.getItem('last_cloud_update')) {
+                                console.log("Yeni məlumat tapıldı, yenilənir...");
+                                await loadCloudData();
+                                renderView();
+                            }
+                        }
+                    } catch (e) { }
+                }
+            }, 30000);
         });
 
         // Köhnə data-lı istifadəçilər üçün idman müəllimlərini "İdman" ixtisasına məcburi keçir
@@ -1754,10 +1758,40 @@
             if (changed) saveState();
         }
 
-        function saveState() {
+        async function saveState() {
+            // Lokal yadda saxla
             localStorage.setItem('teachers', JSON.stringify(state.teachers));
             localStorage.setItem('locations', JSON.stringify(state.locations));
             localStorage.setItem('assignments', JSON.stringify(state.assignments));
+
+            // Buluda sinxron et
+            if (KVDB_BUCKET_ID) {
+                updateSyncStatus('pending', 'Verilənlər buluda göndərilir...');
+                try {
+                    const updatedAt = new Date().toISOString();
+                    const payload = {
+                        teachers: state.teachers,
+                        locations: state.locations,
+                        assignments: state.assignments,
+                        updated_at: updatedAt
+                    };
+
+                    // PUT metodu daha stabil işləyə bilər
+                    const response = await fetch(`https://kvdb.io/${KVDB_BUCKET_ID}/${KVDB_KEY}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(payload),
+                        mode: 'cors'
+                    });
+
+                    if (!response.ok) throw new Error(`Status: ${response.status}`);
+
+                    localStorage.setItem('last_cloud_update', updatedAt);
+                    updateSyncStatus('online', 'Məlumatlar buluda yazıldı');
+                } catch (err) {
+                    console.error("Yadda saxlama xətası:", err);
+                    updateSyncStatus('offline', `Bulud ERROR: ${err.message}`);
+                }
+            }
         }
 
         // Canlı saat
