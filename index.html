@@ -1562,7 +1562,7 @@
                 <h2 id="view-title">Panel</h2>
                 <div class="sync-status" id="sync-status-container">
                     <span class="sync-dot" id="sync-dot"></span>
-                    <span class="sync-text" id="sync-text">Buludla əlaqə qurulur...</span>
+                    <span class="sync-text" id="sync-text">Serverlə əlaqə qurulur...</span>
                 </div>
                 <div class="user-info">
                     <div class="live-clock">
@@ -1667,7 +1667,7 @@
                             state.assignments = data.assignments || {};
 
                             localStorage.setItem('last_cloud_update', data.updated_at);
-                            updateSyncStatus('online', 'Buludla sinxron edildi');
+                            updateSyncStatus('online', 'Serverlə sinxronizasiya edildi');
                             renderView();
                         } else {
                             // Baza boşdursa ilkin datanı göndər
@@ -3578,3 +3578,4 @@
 
 
 </html>
+
