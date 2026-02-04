@@ -1645,33 +1645,37 @@
             if (localLocations) state.locations = JSON.parse(localLocations);
             if (localAssignments) state.assignments = JSON.parse(localAssignments);
 
-            // Buluddan yüklə
+            // Buluddan yüklə (Keşdən yox, birbaşa serverdən)
             try {
-                const response = await fetch(SYNC_URL);
+                const cacheBuster = `?t=${Date.now()}`;
+                const response = await fetch(SYNC_URL + cacheBuster);
+
                 if (response.ok) {
                     const data = await response.json();
-                    if (data && (data.teachers || data.locations)) {
+                    if (data && data.updated_at) {
                         state.teachers = data.teachers || [];
                         state.locations = data.locations || [];
                         state.assignments = data.assignments || {};
+
+                        localStorage.setItem('teachers', JSON.stringify(state.teachers));
+                        localStorage.setItem('locations', JSON.stringify(state.locations));
+                        localStorage.setItem('assignments', JSON.stringify(state.assignments));
                         localStorage.setItem('last_cloud_update', data.updated_at);
+
                         updateSyncStatus('online', 'Sinxronizasiya aktivdir');
                     } else {
-                        // Bulud boşdursa, lokaldakıları göndər
+                        // Əgər bulud boşdursa, lokaldakıları (boş və ya dolu) ora göndər
                         await saveState();
                     }
                 } else if (response.status === 404) {
-                    // İlk dəfə istifadə olunursa
-                    if (state.teachers.length === 0) {
-                        state.teachers = [];
-                        state.locations = DEFAULT_LOCATIONS;
-                    }
+                    // Baza yoxdursa yarat
+                    state.teachers = [];
+                    state.locations = DEFAULT_LOCATIONS;
                     await saveState();
-                    updateSyncStatus('online', 'Baza yaradıldı');
                 }
             } catch (err) {
                 console.error("Yükləmə xətası:", err);
-                updateSyncStatus('offline', 'Lokal rejim (İnternet yoxdur)');
+                updateSyncStatus('offline', 'Lokal rejim');
             }
         }
 
@@ -1695,19 +1699,21 @@
             renderView();
             setupTheme();
 
-            // Sinxronizasiya yoxlaması (15 saniyədən bir)
+            // Sinxronizasiya yoxlaması (10 saniyədən bir)
             setInterval(async () => {
                 try {
-                    const response = await fetch(SYNC_URL);
+                    const cacheBuster = `?t=${Date.now()}`;
+                    const response = await fetch(SYNC_URL + cacheBuster);
                     if (response.ok) {
                         const data = await response.json();
-                        if (data.updated_at !== localStorage.getItem('last_cloud_update')) {
+                        if (data && data.updated_at !== localStorage.getItem('last_cloud_update')) {
+                            console.log("Yeni bulud məlumatı aşkar edildi...");
                             await loadCloudData();
                             renderView();
                         }
                     }
                 } catch (e) { }
-            }, 15000);
+            }, 10000);
         });
 
         // Köhnə data-lı istifadəçilər üçün idman müəllimlərini "İdman" ixtisasına məcburi keçir
@@ -1731,11 +1737,12 @@
         }
 
         async function saveState() {
+            // Lokal yadda saxla
             localStorage.setItem('teachers', JSON.stringify(state.teachers));
             localStorage.setItem('locations', JSON.stringify(state.locations));
             localStorage.setItem('assignments', JSON.stringify(state.assignments));
 
-            updateSyncStatus('pending', 'Yadda saxlanılır...');
+            updateSyncStatus('pending', 'Bulud yenilənir...');
             try {
                 const updatedAt = new Date().toISOString();
                 const payload = {
@@ -1745,16 +1752,21 @@
                     updated_at: updatedAt
                 };
 
+                // PUT metodu vacibdir, çünki POST məlumatı siyahıya əlavə edir (append), 
+                // PUT isə köhnənin üstünə yazır (overwrite).
                 const response = await fetch(SYNC_URL, {
-                    method: 'POST',
+                    method: 'PUT',
                     body: JSON.stringify(payload)
                 });
 
                 if (response.ok) {
                     localStorage.setItem('last_cloud_update', updatedAt);
                     updateSyncStatus('online', 'Buludla sinxron edildi');
+                } else {
+                    throw new Error("Yazma xətası");
                 }
             } catch (err) {
+                console.error("Save error:", err);
                 updateSyncStatus('offline', 'Lokal yadda saxlanıldı');
             }
         }
