@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Növbətçi Müəllim Sistemi | Azərbaycan Beynəlxalq Maarif</title>
-    <!-- Cloud Sync: Pantry Cloud (Stable) -->
+    <!-- Cloud Sync: Google Firebase (Professional Edition) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <meta name="description"
         content="Məktəb növbətçi müəllim paylanma və idarəetmə sistemi. Müasir, sürətli və asan istifadə.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1591,10 +1593,17 @@
     </div>
 
     <script>
-        // ===== BULUD SİNXRONİZASİYASI (Pantry.cloud - ƏN STABİL) =====
-        const PANTRY_ID = "de3fb7b2-3029-4780-9288-140683a9361a";
-        const BASKET_NAME = "novbe_v1";
-        const SYNC_URL = `https://getpantry.cloud/apiv1/pantry/${PANTRY_ID}/basket/${BASKET_NAME}`;
+        // ===== BULUD SİNXRONİZASİYASI (Google Firebase) =====
+        const FIREBASE_CONFIG = {
+            databaseURL: "https://mektebn-default-rtdb.europe-west1.firebasedatabase.app/" // Bura kopyaladığınız Firebase linkini yazın
+        };
+
+        // Firebase-ni başlat
+        let db = null;
+        if (FIREBASE_CONFIG.databaseURL) {
+            firebase.initializeApp(FIREBASE_CONFIG);
+            db = firebase.database().ref('duty_system');
+        }
 
         // Status yeniləmə funksiyası
 
@@ -1647,36 +1656,28 @@
             if (localLocations) state.locations = JSON.parse(localLocations);
             if (localAssignments) state.assignments = JSON.parse(localAssignments);
 
-            // Buluddan yüklə
-            try {
-                const response = await fetch(SYNC_URL, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
+            // Google Firebase-dən yüklə
+            if (db) {
+                try {
+                    db.once('value', (snapshot) => {
+                        const data = snapshot.val();
+                        if (data && data.updated_at) {
+                            state.teachers = data.teachers || [];
+                            state.locations = data.locations || [];
+                            state.assignments = data.assignments || {};
 
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.updated_at) {
-                        state.teachers = data.teachers || [];
-                        state.locations = data.locations || [];
-                        state.assignments = data.assignments || {};
-                        localStorage.setItem('last_cloud_update', data.updated_at);
-                        updateSyncStatus('online', 'Buludla əlaqə quruldu');
-                    } else {
-                        await saveState();
-                    }
-                } else if (response.status === 404) {
-                    // Əgər buludda hələ heç nə yoxdursa
-                    state.teachers = [];
-                    state.locations = DEFAULT_LOCATIONS;
-                    await saveState();
-                    updateSyncStatus('online', 'Yeni baza yaradıldı');
-                } else {
-                    throw new Error(`Sinxronizasiya xətası: ${response.status}`);
+                            localStorage.setItem('last_cloud_update', data.updated_at);
+                            updateSyncStatus('online', 'Google Bulud Aktivdir');
+                            renderView();
+                        } else {
+                            // Baza boşdursa ilkin datanı göndər
+                            saveState();
+                        }
+                    });
+                } catch (err) {
+                    console.error("Yükləmə xətası:", err);
+                    updateSyncStatus('offline', 'Lokal rejim');
                 }
-            } catch (err) {
-                console.error("Yükləmə xətası:", err);
-                updateSyncStatus('offline', 'Lokal rejim aktivdir');
             }
         }
 
@@ -1700,20 +1701,21 @@
             renderView();
             setupTheme();
 
-            // Sinxronizasiya yoxlaması (15 saniyədən bir)
-            setInterval(async () => {
-                try {
-                    const response = await fetch(SYNC_URL);
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data && data.updated_at !== localStorage.getItem('last_cloud_update')) {
-                            console.log("Yeni məlumat tapıldı, yenilənir...");
-                            await loadCloudData();
-                            renderView();
-                        }
+            // REALTIME YENİLƏMƏ (Google-un ən böyük özəlliyi)
+            // Başqa cihazda nəsə dəyişən kimi bura avtomatik düşəcək
+            if (db) {
+                db.on('value', (snapshot) => {
+                    const data = snapshot.val();
+                    if (data && data.updated_at !== localStorage.getItem('last_cloud_update')) {
+                        console.log("Buluddan canlı yenilənmə gəldi...");
+                        state.teachers = data.teachers || [];
+                        state.locations = data.locations || [];
+                        state.assignments = data.assignments || {};
+                        localStorage.setItem('last_cloud_update', data.updated_at);
+                        renderView();
                     }
-                } catch (e) { }
-            }, 15000);
+                });
+            }
         });
 
         // Köhnə data-lı istifadəçilər üçün idman müəllimlərini "İdman" ixtisasına məcburi keçir
@@ -1741,32 +1743,25 @@
             localStorage.setItem('locations', JSON.stringify(state.locations));
             localStorage.setItem('assignments', JSON.stringify(state.assignments));
 
-            updateSyncStatus('pending', 'Verilənlər buluda göndərilir...');
-            try {
-                const updatedAt = new Date().toISOString();
-                const payload = {
-                    teachers: state.teachers,
-                    locations: state.locations,
-                    assignments: state.assignments,
-                    updated_at: updatedAt
-                };
+            if (db) {
+                updateSyncStatus('pending', 'Google-a yazılır...');
+                try {
+                    const updatedAt = new Date().toISOString();
+                    const payload = {
+                        teachers: state.teachers,
+                        locations: state.locations,
+                        assignments: state.assignments,
+                        updated_at: updatedAt
+                    };
 
-                const response = await fetch(SYNC_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                    mode: 'cors'
-                });
+                    await db.set(payload);
 
-                if (response.ok) {
                     localStorage.setItem('last_cloud_update', updatedAt);
-                    updateSyncStatus('online', 'Buludla sinxron edildi');
-                } else {
-                    throw new Error(`Xəta kodu: ${response.status}`);
+                    updateSyncStatus('online', 'Google Buludda saxlanıldı');
+                } catch (err) {
+                    console.error("Save error:", err);
+                    updateSyncStatus('offline', 'Xəta: ' + err.message);
                 }
-            } catch (err) {
-                console.error("Save error:", err);
-                updateSyncStatus('offline', `Xəta: ${err.message}`);
             }
         }
 
