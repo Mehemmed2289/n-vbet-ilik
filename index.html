@@ -1766,7 +1766,7 @@
 
             // Buluda sinxron et
             if (KVDB_BUCKET_ID) {
-                updateSyncStatus('pending', 'Verilənlər buluda göndərilir...');
+                updateSyncStatus('pending', 'Buluda göndərilir...');
                 try {
                     const updatedAt = new Date().toISOString();
                     const payload = {
@@ -1776,20 +1776,25 @@
                         updated_at: updatedAt
                     };
 
-                    // PUT metodu daha stabil işləyə bilər
                     const response = await fetch(`https://kvdb.io/${KVDB_BUCKET_ID}/${KVDB_KEY}`, {
-                        method: 'PUT',
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
                         body: JSON.stringify(payload),
                         mode: 'cors'
                     });
 
+                    if (response.status === 403) {
+                        throw new Error("Giriş bloklandı. Zəhmət olmasa tətbiqi GitHub/Vercel-ə yükləyin (CORS xətası).");
+                    }
                     if (!response.ok) throw new Error(`Status: ${response.status}`);
 
                     localStorage.setItem('last_cloud_update', updatedAt);
-                    updateSyncStatus('online', 'Məlumatlar buluda yazıldı');
+                    updateSyncStatus('online', 'Buludda yadda saxlanıldı');
                 } catch (err) {
                     console.error("Yadda saxlama xətası:", err);
-                    updateSyncStatus('offline', `Bulud ERROR: ${err.message}`);
+                    updateSyncStatus('offline', `Xəta: ${err.message}`);
                 }
             }
         }
