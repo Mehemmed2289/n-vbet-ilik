@@ -1593,7 +1593,7 @@
     <script>
         // ===== BULUD SİNXRONİZASİYASI AYARLARI (JSONbin.io) =====
         // Sürətli və stabil bulud bazası
-        const JSONBIN_BIN_ID = "67a1b023ad19ca34f8f7470f"; // Hazır Bin ID
+        const JSONBIN_BIN_ID = "67a1bcb2e41b4d34e484c2bb"; // Təzə Bin ID
         const JSONBIN_MASTER_KEY = "$2a$10$779Sny/jR8WOnC8oX.zIKeR1H67T4x3tG0SAtv6sOas5B0id7m4qO"; // Master Key
 
         // Status yeniləmə funksiyası
@@ -1676,6 +1676,13 @@
                             // Bulud boşdursa, lokaldakıları buluda itələ
                             updateSyncStatus('pending', 'Bulud təmizlənir/yaradılır...');
                             await saveState();
+                        }
+                    } else if (response.status === 404) {
+                        // Bin tapılmadısa, dərhal ilkin məlumatları lokala yüklə və 1 saniyə sonra təkrar yoxla
+                        updateSyncStatus('offline', 'Baza hazırlanır...');
+                        if (state.teachers.length === 0) {
+                            state.teachers = [];
+                            state.locations = DEFAULT_LOCATIONS;
                         }
                     } else {
                         throw new Error(`Status: ${response.status}`);
