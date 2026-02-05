@@ -1763,12 +1763,10 @@
                 const t = state.teachers.find(te => te.id == tid);
                 if (!t) return;
 
-                // Müəllimin bu saatda həqiqətən boş olduğunu yoxlayırıq
-                for (let h = 1; h <= 8; h++) {
-                    const sched = t.schedule && t.schedule[day] ? t.schedule[day].find(s => s.hour == h) : null;
-                    if (sched && !sched.isBusy) {
-                        const win = getTeacherStayWindow(t, day);
-                        if (win && h >= win.start && h <= win.end) {
+                const win = getTeacherStayWindow(t, day);
+                if (win) {
+                    for (let h = win.start; h <= win.end; h++) {
+                        if (h >= 1 && h <= 8) {
                             coverage[h - 1] = true;
                         }
                     }
@@ -2154,33 +2152,7 @@
             `;
         }
 
-        function renderShortageWarning() {
-            const shortages = getShortages();
-            if (shortages.length === 0) return '';
 
-            return `
-                <div class="shortage-warning">
-                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span style="font-size: 1.1rem;">⚠️</span>
-                            <h4 style="margin:0; font-size: 0.85rem; font-weight: 700; color: #c53030;">Çatışmazlıq!</h4>
-                            <span style="font-size: 0.75rem; color: #e53e3e; opacity: 0.8;">(${shortages.length} nöqtə)</span>
-                        </div>
-                        <button class="btn" onclick="const list = document.getElementById('shortage-list-el'); list.classList.toggle('expanded'); this.textContent = list.classList.contains('expanded') ? 'Bağla' : 'Hamısını göstər'" 
-                                style="padding: 2px 12px; font-size: 0.65rem; background: #c53030; color: #fff; border-radius: 4px; height: 24px; cursor: pointer; border: none; font-weight: 600;">
-                            Hamısını göstər
-                        </button>
-                    </div>
-                    <div class="shortage-list" id="shortage-list-el">
-                        ${shortages.map(s => `
-                            <span class="shortage-item" onclick="openAssignModal('${s.day}', ${s.locId})">
-                                ${s.day.slice(0, 3)} - ${s.location}: ${s.missingHours.join(',')}
-                            </span>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
 
         function renderSchedule(container) {
             container.innerHTML = `
@@ -2943,16 +2915,14 @@
         };
 
         window.getTeacherStayWindow = (t, day) => {
+            // Tam ştatlı müəllimlər hər zaman 1-8 saatları arası məktəbdədirlər
+            if (!t.hourly) return { start: 1, end: 8 };
+
+            // Saat hesablı müəllimlər üçün stay-window dərslərinə görə müəyyən edilir
             if (!t.schedule || !t.schedule[day]) return null;
             const busyPeriods = t.schedule[day].filter(p => p.isBusy).map(p => p.hour);
             if (busyPeriods.length === 0) return null;
 
-            // Əgər saat hesablı DEYİLSƏ, hər zaman 1-8 arası məktəbdə sayılır (əgər o gün dərsi varsa)
-            if (!t.hourly) {
-                return { start: 1, end: 8 };
-            }
-
-            // Saat hesablıdırsa, yalnız dərsləri olan aralığı göstər
             return { start: Math.min(...busyPeriods), end: Math.max(...busyPeriods) };
         };
 
@@ -3468,17 +3438,15 @@
 
             state.days.forEach(day => {
                 state.locations.forEach(loc => {
-                    const coverage = getCoverage(day, loc.id);
-                    const isYem = loc.name.toLowerCase().includes('yeməkxana');
-                    const target = isYem ? [4, 5] : [0, 1, 2, 3, 4, 5, 6, 7]; // index
+                    const ids = state.assignments[`${day}-${loc.id}`] || [];
 
-                    const missing = target.filter(i => !coverage[i]).map(i => i + 1);
-                    if (missing.length > 0) {
+                    // Əgər heç bir müəllim təyin olunmayıbsa, bu çatışmazlıqdır
+                    if (ids.length === 0) {
                         shortages.push({
                             day,
                             location: loc.name,
                             locId: loc.id,
-                            missingHours: missing
+                            missingHours: ['Təyin edilməyib']
                         });
                     }
                 });
